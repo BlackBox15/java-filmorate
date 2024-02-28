@@ -17,13 +17,15 @@ public class UserController {
     }
 
     @PostMapping
-    public void create(@RequestBody User user) {
+    public User create(@RequestBody User user) {
         users.add(user);
+        return user;
     }
 
     @PutMapping
-    public void update(@RequestBody User user) {
+    public User update(@RequestBody User user) {
         users.remove(user);
         users.add(user);
+        return user;
     }
 }
