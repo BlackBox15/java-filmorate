@@ -37,7 +37,6 @@ public class UserController {
             throw new ValidationException("Аргумент film не прошёл проверку");
         }
 
-
         return users.stream()
                 .filter(item -> item.getId() == user.getId())
                 .findFirst().map(item -> {
@@ -56,10 +55,10 @@ public class UserController {
         if (user.getBirthday().isAfter(LocalDate.now())) return false;
 
         // логин не может быть пустым и содержать пробелы
-        if (user.getLogin().isEmpty() || user.getLogin().matches("\\*\\s\\*")) return false;
+        if (user.getLogin().isEmpty()) return false;
 
         // имя для отображения может быть пустым — в таком случае будет использован логин
-        if (user.getName().isEmpty()) {
+        if ((user.getName() == null)) {
             user.setName(user.getLogin());
         }
 

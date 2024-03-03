@@ -37,10 +37,14 @@ public class FilmController {
         if (!validateUser(film)) {
             throw new ValidationException("Аргумент film не прошёл проверку");
         }
-        if (films.remove(film)) {
-            films.add(film);
-        }
-        return film;
+        return films.stream()
+                .filter(item -> item.getId() == film.getId())
+                .findFirst().map(item -> {
+                    films.remove(item);
+                    films.add(film);
+                    return film;
+                })
+                .orElseThrow();
     }
 
     private boolean validateUser(Film film) {
