@@ -24,7 +24,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public void create(@RequestBody Film film) throws InvalidEmailException {
+    public Film create(@RequestBody Film film) throws InvalidEmailException {
         if (user.hashCode() == 0) {
             throw new InvalidEmailException("В переданных данных отсутствует адрес электронной почты");
         }
@@ -33,16 +33,18 @@ public class FilmController {
         }
 
         films.add(film);
+        return film;
     }
 
     @PutMapping
-    public void update(@RequestBody Film film) throws InvalidEmailException {
+    public Film update(@RequestBody Film film) throws InvalidEmailException {
         if (user.hashCode() == 0) {
             throw new InvalidEmailException("В переданных данных отсутствует адрес электронной почты");
         }
 
         films.remove(film);
         films.add(film);
+        return film;
     }
 }
 
