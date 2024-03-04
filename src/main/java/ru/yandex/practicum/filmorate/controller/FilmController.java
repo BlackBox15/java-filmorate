@@ -7,63 +7,66 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    List<Film> films = new ArrayList<>();
+    private Map<Integer, Film> filmsMap = new HashMap<>();
     private int filmId;
 
     @GetMapping
     public List<Film> listAllUsers() {
-        return films;
+        return new ArrayList<>(filmsMap.values());
     }
 
     @PostMapping
     public Film create(@RequestBody Film film) throws ValidationException {
-        if (!validateUser(film)) {
-            log.debug("Ошибка создания нового фильма.");
-            throw new ValidationException("Аргумент film не прошёл проверку");
-        }
-        log.info("Новый фильм добавлен.");
+        validateFilm(film);
+
         film.setId(++filmId);
-        films.add(film);
+        filmsMap.put(filmId, film);
+        log.info("Новый фильм добавлен");
         return film;
     }
 
     @PutMapping
     public Film update(@RequestBody Film film) throws ValidationException {
-        if (!validateUser(film)) {
-            log.debug("Ошибка при обновлении фильма.");
-            throw new ValidationException("Аргумент film не прошёл проверку");
+        validateFilm(film);
+
+        if (filmsMap.remove(film.getId()) != null) {
+            filmsMap.put(film.getId(), film);
+            log.info("Фильм обновлён");
+            return film;
+        } else {
+            log.error("Попытка обновления фильма с несуществующим Id");
+            throw new ValidationException("Попытка обновления фильма с несуществующим Id");
         }
-        return films.stream()
-                .filter(item -> item.getId() == film.getId())
-                .findFirst().map(item -> {
-                    log.info("Успешное обновление фильма.");
-                    films.remove(item);
-                    films.add(film);
-                    return film;
-                })
-                .orElseThrow();
     }
 
-    private boolean validateUser(Film film) {
-        // название не может быть пустым
-        if (film.getName().isEmpty()) return false;
+    private void validateFilm (Film film) throws ValidationException {
+        if (film.getName().isEmpty()) {
+            log.error("Ошибка добавления нового фильма. Пустое название");
+            throw new ValidationException("Ошибка добавления нового фильма. Пустое название");
+        }
 
-        // максимальная длина описания — 200 символов
-        if (film.getDescription().length() > 200) return false;
+        if (film.getDescription().length() > 200) {
+            log.error("Ошибка добавление нового фильма. Превышена максимальная длина описания");
+            throw new ValidationException("Ошибка добавление нового фильма. Превышена максимальная длина описания");
+        }
 
-        // дата релиза — не раньше 28 декабря 1895 года
-        if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) return false;
+        if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
+            log.error("Ошибка добавления нового фильма. Дата релиза");
+            throw new ValidationException("Ошибка добавления нового фильма. Дата релиза");
+        }
 
-        // продолжительность фильма должна быть положительной
-        if (film.getDuration() < 0) return false;
-
-        return true;
+        if (film.getDuration() < 0) {
+            log.error("Ошибка добавления нового фильма. Отрицательная продолжительность");
+            throw new ValidationException("Ошибка добавления нового фильма. Отрицательная продолжительность");
+        }
     }
 }
 

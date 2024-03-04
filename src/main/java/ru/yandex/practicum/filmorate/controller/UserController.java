@@ -6,63 +6,61 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    List<User> users = new ArrayList<>();
+    private Map<Integer, User> usersMap = new HashMap<>();
     private int userId;
 
     @GetMapping
     public List<User> listAllUsers() {
-        return users;
+        return new ArrayList<>(usersMap.values());
     }
 
     @PostMapping
     public User create(@RequestBody User user) throws ValidationException {
-        if (!validateUser(user)) {
-            log.debug("Ошибка добавления нового пользователя");
-            throw new ValidationException("Аргумент user не прошёл проверку");
-        }
-        log.info("Новый пользователь добавлен.");
+        validateUser(user);
+
         user.setId(++userId);
-        users.add(user);
+        usersMap.put(user.getId(), user);
+        log.info("Новый пользователь добавлен.");
         return user;
     }
 
     @PutMapping
     public User update(@RequestBody User user) throws ValidationException, NoSuchElementException {
-        if (!validateUser(user)) {
-            log.debug("Ошибка при обновлении пользователя.");
-            throw new ValidationException("Аргумент film не прошёл проверку");
+        validateUser(user);
+
+        if (usersMap.remove(user.getId()) != null) {
+            usersMap.put(user.getId(), user);
+            log.info("Фильм обновлён");
+            return user;
+        } else {
+            log.error("Попытка обновления пользователя с несуществующим Id");
+            throw new ValidationException("Попытка обновления пользователя с несуществующим Id");
         }
 
-        return users.stream()
-                .filter(item -> item.getId() == user.getId())
-                .findFirst().map(item -> {
-                    log.info("Успешное обновление пользователя.");
-                    users.remove(item);
-                    users.add(user);
-                    return user;
-                })
-                .orElseThrow();
     }
 
-    private boolean validateUser(User user) {
-        // электронная почта не может быть пустой и должна содержать символ @
-        if (user.getEmail().isEmpty() || !(user.getEmail().contains("@"))) return false;
+    private boolean validateUser(User user) throws ValidationException {
+        if (user.getEmail().isEmpty() || !(user.getEmail().contains("@"))) {
+            log.error("электронная почта не может быть пустой и должна содержать символ @");
+            throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
+        }
 
-        // дата рождения не может быть в будущем
-        if (user.getBirthday().isAfter(LocalDate.now())) return false;
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.error("дата рождения не может быть в будущем");
+            throw new ValidationException("дата рождения не может быть в будущем");
+        }
 
-        // логин не может быть пустым и содержать пробелы
-        if (user.getLogin().isEmpty()) return false;
+        if (user.getLogin().isEmpty()) {
+            log.error("логин не может быть пустым и содержать пробелы");
+            throw new ValidationException("логин не может быть пустым и содержать пробелы");
+        }
 
-        // имя для отображения может быть пустым — в таком случае будет использован логин
         if ((user.getName() == null)) {
             user.setName(user.getLogin());
         }
