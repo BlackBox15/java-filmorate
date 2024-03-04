@@ -19,7 +19,7 @@ public class FilmController {
     private int filmId;
 
     @GetMapping
-    public List<Film> listAllUsers() {
+    public List<Film> listAllFilms() {
         return new ArrayList<>(filmsMap.values());
     }
 
@@ -48,14 +48,14 @@ public class FilmController {
     }
 
     private void validateFilm (Film film) throws ValidationException {
-        if (film.getName().isEmpty()) {
+        if (film.getName() == null) {
             log.error("Ошибка добавления нового фильма. Пустое название");
             throw new ValidationException("Ошибка добавления нового фильма. Пустое название");
         }
 
         if (film.getDescription().length() > 200) {
-            log.error("Ошибка добавление нового фильма. Превышена максимальная длина описания");
-            throw new ValidationException("Ошибка добавление нового фильма. Превышена максимальная длина описания");
+            log.error("Ошибка добавления нового фильма. Превышена максимальная длина описания");
+            throw new ValidationException("Ошибка добавления нового фильма. Превышена максимальная длина описания");
         }
 
         if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {

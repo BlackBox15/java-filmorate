@@ -46,7 +46,7 @@ public class UserController {
     }
 
     private boolean validateUser(User user) throws ValidationException {
-        if (user.getEmail().isEmpty() || !(user.getEmail().contains("@"))) {
+        if (user.getEmail() == null || !(user.getEmail().contains("@"))) {
             log.error("электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
         }
@@ -56,7 +56,7 @@ public class UserController {
             throw new ValidationException("дата рождения не может быть в будущем");
         }
 
-        if (user.getLogin().isEmpty()) {
+        if (user.getLogin() == null) {
             log.error("логин не может быть пустым и содержать пробелы");
             throw new ValidationException("логин не может быть пустым и содержать пробелы");
         }
