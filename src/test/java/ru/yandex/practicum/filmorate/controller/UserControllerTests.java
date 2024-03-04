@@ -38,7 +38,7 @@ public class UserControllerTests {
     }
 
     @Test
-    public void shouldThrowExceptionWthEmptyEmail() {
+    public void shouldThrowExceptionWithoutEmail() {
         User testUser = new User();
         testUser.setName("Jonny");
         testUser.setBirthday(LocalDate.parse("1980-01-01"));
@@ -66,7 +66,7 @@ public class UserControllerTests {
     }
 
     @Test
-    public void shouldThrowExcpWithFutureBirthday() {
+    public void shouldThrowExceptionWithFutureBirthday() {
         User testUser = new User();
         testUser.setBirthday(LocalDate.parse("2300-01-01"));
         testUser.setLogin("Razrushitel3000");
@@ -80,7 +80,7 @@ public class UserControllerTests {
     }
 
     @Test
-    public void shouldThrowExcpWithoutLogin() {
+    public void shouldThrowExceptionWithoutLogin() {
         User testUser = new User();
         testUser.setBirthday(LocalDate.parse("1989-01-01"));
         testUser.setEmail("test@test.ru");
