@@ -47,7 +47,7 @@ public class FilmController {
         }
     }
 
-    private void validateFilm (Film film) throws ValidationException {
+    private void validateFilm(Film film) throws ValidationException {
         if (film.getName() == null) {
             log.error("Ошибка добавления нового фильма. Пустое название");
             throw new ValidationException("Ошибка добавления нового фильма. Пустое название");
