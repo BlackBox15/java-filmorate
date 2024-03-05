@@ -32,7 +32,6 @@ class FilmControllerTest {
     @Test
     public void shouldThrowExceptionWithoutName() {
         Film testFilm = new Film();
-        testFilm.setName("");
         testFilm.setDescription("sci-fi");
         testFilm.setDuration(180);
         testFilm.setReleaseDate(LocalDate.parse("1972-01-01"));
