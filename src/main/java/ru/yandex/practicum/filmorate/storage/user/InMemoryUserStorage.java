@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    private Map<Integer, User> usersMap = new HashMap<>();
+    private final Map<Integer, User> usersMap = new HashMap<>();
     private int userId;
 
     @Override
@@ -52,7 +52,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     }
 
-    private boolean validateUser(User user) throws ValidationException {
+    private void validateUser(User user) throws ValidationException {
         if (user.getEmail() == null || !(user.getEmail().contains("@"))) {
             log.error("электронная почта не может быть пустой и должна содержать символ @");
             throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
@@ -71,7 +71,5 @@ public class InMemoryUserStorage implements UserStorage {
         if ((user.getName() == null)) {
             user.setName(user.getLogin());
         }
-
-        return true;
     }
 }

@@ -11,7 +11,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-    FilmController filmController = new FilmController();
+    FilmController filmController;
 
     @Test
     public void shouldBeEmptyLists() {
