@@ -8,5 +8,5 @@ public interface FilmStorage {
     Film create(Film film);
     Film remove(Film film);
     Film update(Film film);
-    List<Film> listAllFilms();
+    List<Film> findAll();
 }
