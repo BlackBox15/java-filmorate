@@ -20,7 +20,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film create(Film film) {
         validateFilm(film);
-
         film.setId(++filmId);
         filmsMap.put(filmId, film);
         log.info("Новый фильм добавлен");
@@ -29,7 +28,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film remove(Film film) {
-        return null;
+        return filmsMap.remove(film.getId());
     }
 
     @Override

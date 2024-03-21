@@ -40,9 +40,4 @@ public class UserController {
     public User remove(@RequestBody User user) throws NullPointerException {
         return userService.remove(user);
     }
-
-//    @DeleteMapping
-//    public User remove(@) {
-//        return inMemoryUserStorage.remove(user);
-//    }
 }
