@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 
 public class UserControllerTests {
-    UserController userController = new UserController();
+    UserController userController;
 
     @Test
     public void shouldBeEmptyLists() {

@@ -11,5 +11,5 @@ public interface UserStorage {
     User remove(User user);
     User update(User user);
 
-    List<User> listAllUsers();
+    List<User> findAll();
 }

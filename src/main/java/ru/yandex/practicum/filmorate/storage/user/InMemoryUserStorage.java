@@ -20,7 +20,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User create(User user) {
         validateUser(user);
-
         user.setId(++userId);
         usersMap.put(user.getId(), user);
         log.info("Новый пользователь добавлен.");
@@ -28,19 +27,18 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> listAllUsers() {
+    public List<User> findAll() {
         return new ArrayList<>(usersMap.values());
     }
 
     @Override
     public User remove(User user) {
-        return null;
+        return usersMap.remove(user.getId());
     }
 
     @Override
     public User update(User user) {
         validateUser(user);
-
         if (usersMap.remove(user.getId()) != null) {
             usersMap.put(user.getId(), user);
             log.info("Фильм обновлён");
