@@ -45,9 +45,8 @@ public class InMemoryUserStorage implements UserStorage {
             return user;
         } else {
             log.error("Попытка обновления пользователя с несуществующим Id");
-            throw new ValidationException("Попытка обновления пользователя с несуществующим Id");
         }
-
+        return null;
     }
 
     private void validateUser(User user) throws ValidationException {
