@@ -2,20 +2,19 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
-    private final Map<Integer, Film> filmsMap = new HashMap<>();
-    private int filmId;
+    private final Map<Long, Film> filmsMap = new HashMap<>();
+    private Long filmId;
 
     @Override
     public Film create(Film film) {
@@ -39,15 +38,43 @@ public class InMemoryFilmStorage implements FilmStorage {
             filmsMap.put(film.getId(), film);
             log.info("Фильм обновлён");
             return film;
-        } else {
-            log.error("Попытка обновления фильма с несуществующим Id");
         }
-        return null;
+        throw new NoSuchObjectException("не найден фильм для обновления");
     }
 
     @Override
     public List<Film> findAll() {
         return new ArrayList<>(filmsMap.values());
+    }
+
+    @Override
+    public Film likeFilm(Long filmId, Long userId) {
+        if (filmsMap.containsKey(filmId)) {
+            filmsMap.get(filmId).getLikes().add(userId);
+            log.info("Рейтинг фильма увеличен");
+            return filmsMap.get(filmId);
+        }
+        throw new NoSuchObjectException("Ошибка при добавлении рейтинга");
+    }
+
+    @Override
+    public Film deleteLike(Long filmId, Long userId) {
+        if (filmsMap.containsKey(filmId)) {
+            filmsMap.get(filmId).getLikes().remove(userId);
+            return filmsMap.get(filmId);
+        }
+        throw new NoSuchObjectException("Ошибка удаления рейтинга");
+    }
+
+    @Override
+    public List<Film> findTopRated(int count) {
+        List<Film> sortedFilms = filmsMap.values().stream().sorted(Comparator.comparingInt(f -> f.getLikes().size())).collect(Collectors.toList());
+        return sortedFilms.subList(0, count);
+    }
+
+    @Override
+    public List<Film> findTopRated() {
+        return findTopRated(10);
     }
 
     private void validateFilm(Film film) throws ValidationException {

@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -18,9 +21,45 @@ public class UserController {
         this.userService = userService;
     }
 
+    @DeleteMapping
+    public User remove(@RequestBody User user) throws NullPointerException {
+        return userService.remove(user);
+    }
+
     @GetMapping
+    @ResponseBody
     public List<User> findAll() {
         return userService.findAll();
+    }
+
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public User findUser(@PathVariable Long id) {
+        return userService.findUser(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> findAllFriends(@PathVariable Long id) {
+        return userService.findAllFriends(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    @ResponseBody
+    public User addFriend(@PathVariable Long id, Long friendId) {
+        return userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    @ResponseBody
+    public User removeFriend(@PathVariable Long id, Long friendId) {
+        return userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    @ResponseBody
+    public List<User> getSharedFriends(@PathVariable Long id, Long otherId) {
+        return userService.getSharedFriends(id, otherId);
     }
 
     @PostMapping
@@ -33,8 +72,21 @@ public class UserController {
         return userService.update(user);
     }
 
-    @DeleteMapping
-    public User remove(@RequestBody User user) throws NullPointerException {
-        return userService.remove(user);
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(final ValidationException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNoSuchObjectException(final NoSuchObjectException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleException(final RuntimeException e) {
+        return Map.of("error", e.getMessage());
     }
 }

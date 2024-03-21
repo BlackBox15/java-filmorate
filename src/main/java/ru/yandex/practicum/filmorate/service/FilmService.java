@@ -32,4 +32,20 @@ public class FilmService {
     public Film remove(Film user) {
         return inMemoryFilmStorage.remove(user);
     }
+
+    public Film likeFilm(Long filmId, Long userId) {
+        return inMemoryFilmStorage.likeFilm(filmId, userId);
+    }
+
+    public Film deleteLike(Long filmId, Long userId) {
+        return inMemoryFilmStorage.deleteLike(filmId, userId);
+    }
+
+    public List<Film> findTopRated(int count) {
+        return inMemoryFilmStorage.findTopRated(count);
+    }
+
+    public List<Film> findTopRated() {
+        return inMemoryFilmStorage.findTopRated();
+    }
 }
