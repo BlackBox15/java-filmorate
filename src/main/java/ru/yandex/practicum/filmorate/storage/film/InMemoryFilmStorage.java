@@ -41,7 +41,6 @@ public class InMemoryFilmStorage implements FilmStorage {
             return film;
         } else {
             log.error("Попытка обновления фильма с несуществующим Id");
-            throw new ValidationException("Попытка обновления фильма с несуществующим Id");
         }
     }
 
