@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
@@ -67,8 +66,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addFriend(int userId, int friendId) {
-//        User userToUpdate = usersMap.get((long) userId);
-//        User friendToAdd = usersMap.get((long) friendId);
         if (usersMap.containsKey(userId) && usersMap.containsKey(friendId)) {
             usersMap.get(userId).getFriends().add(friendId);
             usersMap.get(friendId).getFriends().add(userId);
@@ -92,9 +89,9 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public List<User> getSharedFriends(int userId, int otherId) {
         if (usersMap.containsKey(userId) && usersMap.containsKey(otherId)) {
-            List<Integer> sharedUserList = usersMap.get(userId).getFriends().stream().
-                    filter(t -> usersMap.get(otherId).getFriends().contains(t)).
-                    collect(Collectors.toList());
+            List<Integer> sharedUserList = usersMap.get(userId).getFriends().stream()
+                    .filter(t -> usersMap.get(otherId).getFriends().contains(t))
+                    .collect(Collectors.toList());
             List<User> sharedFriends = new ArrayList<>();
             for (Integer id :
                     sharedUserList) {
