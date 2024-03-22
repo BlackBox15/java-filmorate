@@ -13,7 +13,7 @@ public class UserControllerTests {
 
     @Test
     public void shouldBeEmptyLists() {
-        Assertions.assertEquals(Collections.EMPTY_LIST, userController.listAllUsers());
+        Assertions.assertEquals(Collections.EMPTY_LIST, userController.findAll());
     }
 
     @Test
