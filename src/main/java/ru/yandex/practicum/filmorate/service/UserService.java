@@ -16,19 +16,19 @@ public class UserService {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
-    public User findUser(Long userId) {
+    public User findUser(int userId) {
         return inMemoryUserStorage.findUser(userId);
     }
 
-    public List<User> findAllFriends(Long userId) {
+    public List<User> findAllFriends(int userId) {
         return inMemoryUserStorage.getFriends(userId);
     }
 
-    public User addFriend(Long userId, Long friendId) {
+    public User addFriend(int userId, int friendId) {
         return inMemoryUserStorage.addFriend(userId, friendId);
     }
 
-    public List<User> getSharedFriends(Long id, Long otherId) {
+    public List<User> getSharedFriends(int id, int otherId) {
         return inMemoryUserStorage.getSharedFriends(id, otherId);
     }
 
@@ -40,7 +40,7 @@ public class UserService {
         return inMemoryUserStorage.update(user);
     }
 
-    public User removeFriend(Long userId, Long friendId) {
+    public User removeFriend(int userId, int friendId) {
         return inMemoryUserStorage.removeFriend(userId, friendId);
     }
 

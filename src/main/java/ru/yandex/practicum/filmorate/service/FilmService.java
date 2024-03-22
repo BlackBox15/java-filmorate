@@ -33,11 +33,11 @@ public class FilmService {
         return inMemoryFilmStorage.remove(user);
     }
 
-    public Film likeFilm(Long filmId, Long userId) {
+    public Film likeFilm(int filmId, int userId) {
         return inMemoryFilmStorage.likeFilm(filmId, userId);
     }
 
-    public Film deleteLike(Long filmId, Long userId) {
+    public Film deleteLike(int filmId, int userId) {
         return inMemoryFilmStorage.deleteLike(filmId, userId);
     }
 

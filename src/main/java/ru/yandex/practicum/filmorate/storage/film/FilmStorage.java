@@ -9,8 +9,8 @@ public interface FilmStorage {
     Film remove(Film film);
     Film update(Film film);
     List<Film> findAll();
-    Film likeFilm(Long filmId, Long userId);
-    Film deleteLike(Long filmId, Long userId);
+    Film likeFilm(int filmId, int userId);
+    Film deleteLike(int filmId, int userId);
     List<Film> findTopRated(int count);
     List<Film> findTopRated();
 

@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
-    private final Map<Long, Film> filmsMap = new HashMap<>();
-    private Long filmId;
+    private final Map<Integer, Film> filmsMap = new HashMap<>();
+    private int filmId;
 
     @Override
     public Film create(Film film) {
@@ -48,7 +48,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film likeFilm(Long filmId, Long userId) {
+    public Film likeFilm(int filmId, int userId) {
         if (filmsMap.containsKey(filmId)) {
             filmsMap.get(filmId).getLikes().add(userId);
             log.info("Рейтинг фильма увеличен");
@@ -58,7 +58,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film deleteLike(Long filmId, Long userId) {
+    public Film deleteLike(int filmId, int userId) {
         if (filmsMap.containsKey(filmId)) {
             filmsMap.get(filmId).getLikes().remove(userId);
             return filmsMap.get(filmId);
@@ -68,13 +68,21 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> findTopRated(int count) {
-        List<Film> sortedFilms = filmsMap.values().stream().sorted(Comparator.comparingInt(f -> f.getLikes().size())).collect(Collectors.toList());
-        return sortedFilms.subList(0, count);
+        List<Film> sortedFilms = filmsMap.values().stream().sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size()).collect(Collectors.toList());
+
+        if (filmsMap.size() >= count) {
+            return sortedFilms.subList(0, count);
+        } else {
+            return sortedFilms;
+        }
     }
 
     @Override
     public List<Film> findTopRated() {
-        return findTopRated(10);
+        if (filmsMap.size() >= 10) {
+            return findTopRated(10);
+        }
+        throw new NoSuchObjectException("недостаточно фильмов в коллекции");
     }
 
     private void validateFilm(Film film) throws ValidationException {

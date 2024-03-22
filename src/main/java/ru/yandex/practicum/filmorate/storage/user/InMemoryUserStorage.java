@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
@@ -16,8 +17,8 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Long, User> usersMap = new HashMap<>();
-    private Long userId;
+    private final Map<Integer, User> usersMap = new HashMap<>();
+    private int userId;
 
     @Override
     public User create(User user) {
@@ -29,7 +30,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User findUser(Long userId) {
+    public User findUser(int userId) {
         if (usersMap.containsKey(userId)) {
             return usersMap.get(userId);
         }
@@ -37,8 +38,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getFriends(Long userId) {
-
+    public List<User> getFriends(int userId) {
+        if (usersMap.containsKey(userId)) {
+            return usersMap.get(userId).getFriends().stream().map(usersMap::get).collect(Collectors.toList());
+        }
         return null;
     }
 
@@ -55,28 +58,27 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User update(User user) {
         validateUser(user);
-        if (usersMap.remove(user.getId()) != null) {
+        if (usersMap.containsKey(user.getId())) {
             usersMap.put(user.getId(), user);
-            log.info("Пользователь обновлён");
             return user;
         }
         throw new NoSuchObjectException("ошибка при обновлении user");
     }
 
     @Override
-    public User addFriend(Long userId, Long friendId) {
-        User userToUpdate = usersMap.get(userId);
-        User friendToAdd = usersMap.get(friendId);
-        if (userToUpdate != null && friendToAdd != null) {
-            userToUpdate.getFriends().add(friendId);
-            friendToAdd.getFriends().add(userId);
-            return friendToAdd;
+    public User addFriend(int userId, int friendId) {
+//        User userToUpdate = usersMap.get((long) userId);
+//        User friendToAdd = usersMap.get((long) friendId);
+        if (usersMap.containsKey(userId) && usersMap.containsKey(friendId)) {
+            usersMap.get(userId).getFriends().add(friendId);
+            usersMap.get(friendId).getFriends().add(userId);
+            return usersMap.get(friendId);
         }
         throw new NoSuchObjectException("ошибка при добавлении в друзья");
     }
 
     @Override
-    public User removeFriend(Long userId, Long friendId) {
+    public User removeFriend(int userId, int friendId) {
         User userToUpdate = usersMap.get(userId);
         User friendToRemove = usersMap.get(friendId);
         if (userToUpdate != null && friendToRemove != null) {
@@ -88,13 +90,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getSharedFriends(Long userId, Long otherId) {
+    public List<User> getSharedFriends(int userId, int otherId) {
         if (usersMap.containsKey(userId) && usersMap.containsKey(otherId)) {
-            List<Long> sharedUserList = usersMap.get(userId).getFriends().stream().
+            List<Integer> sharedUserList = usersMap.get(userId).getFriends().stream().
                     filter(t -> usersMap.get(otherId).getFriends().contains(t)).
                     collect(Collectors.toList());
             List<User> sharedFriends = new ArrayList<>();
-            for (Long id :
+            for (Integer id :
                     sharedUserList) {
                 sharedFriends.add(usersMap.get(id));
             }

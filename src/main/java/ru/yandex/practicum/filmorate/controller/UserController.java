@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -19,6 +18,16 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping
+    public User create(@RequestBody User user) throws ValidationException {
+        return userService.create(user);
+    }
+
+    @PutMapping
+    public User update(@RequestBody User user) throws ValidationException, NoSuchElementException {
+        return userService.update(user);
     }
 
     @DeleteMapping
@@ -35,41 +44,31 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public User findUser(@PathVariable Long id) {
+    public User findUser(@PathVariable int id) {
         return userService.findUser(id);
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> findAllFriends(@PathVariable Long id) {
+    public List<User> findAllFriends(@PathVariable int id) {
         return userService.findAllFriends(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     @ResponseBody
-    public User addFriend(@PathVariable Long id, Long friendId) {
+    public User addFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     @ResponseBody
-    public User removeFriend(@PathVariable Long id, Long friendId) {
+    public User removeFriend(@PathVariable int id, @PathVariable int friendId) {
         return userService.removeFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     @ResponseBody
-    public List<User> getSharedFriends(@PathVariable Long id, Long otherId) {
+    public List<User> getSharedFriends(@PathVariable int id, @PathVariable int otherId) {
         return userService.getSharedFriends(id, otherId);
-    }
-
-    @PostMapping
-    public User create(@RequestBody User user) throws ValidationException {
-        return userService.create(user);
-    }
-
-    @PutMapping
-    public User update(@RequestBody User user) throws ValidationException, NoSuchElementException {
-        return userService.update(user);
     }
 
     @ExceptionHandler
