@@ -15,7 +15,7 @@ class FilmControllerTest {
 
     @Test
     public void shouldBeEmptyLists() {
-        assertEquals(Collections.EMPTY_LIST, filmController.listAllFilms());
+        assertEquals(Collections.EMPTY_LIST, filmController.findMostRated());
     }
 
     @Test
