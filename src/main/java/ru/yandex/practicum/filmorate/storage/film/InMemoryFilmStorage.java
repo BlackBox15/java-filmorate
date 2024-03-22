@@ -68,8 +68,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> findTopRated(int count) {
-        List<Film> sortedFilms = filmsMap.values().stream().sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size()).collect(Collectors.toList());
-
+        List<Film> sortedFilms = filmsMap.values()
+                .stream()
+                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
+                .collect(Collectors.toList());
         if (filmsMap.size() >= count) {
             return sortedFilms.subList(0, count);
         } else {
