@@ -21,12 +21,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         validateFilm(film);
         film.setId(++filmId);
         filmsMap.put(filmId, film);
-        log.info("Новый фильм добавлен");
+        log.info("Фильм \"{}\" добавлен", film.getName());
         return film;
     }
 
     @Override
     public Film remove(Film film) {
+        log.info("Удаление фильма \"{}\"", film.getName());
         return filmsMap.remove(film.getId());
     }
 
@@ -36,14 +37,16 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         if (filmsMap.remove(film.getId()) != null) {
             filmsMap.put(film.getId(), film);
-            log.info("Фильм обновлён");
+            log.info("Фильм \"{}\" обновлён", film.getName());
             return film;
         }
-        throw new NoSuchObjectException("не найден фильм для обновления");
+        log.error("Не найден фильм для обновления");
+        throw new NoSuchObjectException("Не найден фильм для обновления");
     }
 
     @Override
     public List<Film> findAll() {
+        log.info("Получение списка всех фильмов");
         return new ArrayList<>(filmsMap.values());
     }
 
@@ -54,6 +57,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.info("Рейтинг фильма увеличен");
             return filmsMap.get(filmId);
         }
+        log.error("Ошибка при добавлении рейтинга");
         throw new NoSuchObjectException("Ошибка при добавлении рейтинга");
     }
 
@@ -61,9 +65,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film deleteLike(int filmId, int userId) {
         if (filmsMap.containsKey(filmId)) {
             filmsMap.get(filmId).getLikes().remove(userId);
+            log.info("Лайк удалён");
             return filmsMap.get(filmId);
         }
-        throw new NoSuchObjectException("Ошибка удаления рейтинга");
+        log.error("Ошибка удаления лайка");
+        throw new NoSuchObjectException("Ошибка удаления лайка");
     }
 
     @Override
@@ -72,6 +78,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .stream()
                 .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
                 .collect(Collectors.toList());
+        log.info("Получение списка рейтинговых фильмов");
         if (filmsMap.size() >= count) {
             return sortedFilms.subList(0, count);
         } else {
@@ -82,9 +89,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> findTopRated() {
         if (filmsMap.size() >= 10) {
+            log.info("Получение топ-10 фильмов");
             return findTopRated(10);
         }
-        throw new NoSuchObjectException("недостаточно фильмов в коллекции");
+        log.error("Недостаточно фильмов в коллекции");
+        throw new NoSuchObjectException("Недостаточно фильмов в коллекции");
     }
 
     private void validateFilm(Film film) throws ValidationException {

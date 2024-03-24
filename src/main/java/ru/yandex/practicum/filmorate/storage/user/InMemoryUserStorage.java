@@ -33,7 +33,8 @@ public class InMemoryUserStorage implements UserStorage {
         if (usersMap.containsKey(userId)) {
             return usersMap.get(userId);
         }
-        throw new NoSuchObjectException("ошибка поиска user");
+        log.error("Ошибка поиска user");
+        throw new NoSuchObjectException("Ошибка поиска user");
     }
 
     @Override
@@ -41,16 +42,19 @@ public class InMemoryUserStorage implements UserStorage {
         if (usersMap.containsKey(userId)) {
             return usersMap.get(userId).getFriends().stream().map(usersMap::get).collect(Collectors.toList());
         }
+        log.info("Пользователь не найден, возвращён null");
         return null;
     }
 
     @Override
     public User remove(User user) {
+        log.info("Удаление пользователя");
         return usersMap.remove(user.getId());
     }
 
     @Override
     public List<User> findAll() {
+        log.info("Возвращение списка всех пользователей");
         return new ArrayList<>(usersMap.values());
     }
 
@@ -59,9 +63,11 @@ public class InMemoryUserStorage implements UserStorage {
         validateUser(user);
         if (usersMap.containsKey(user.getId())) {
             usersMap.put(user.getId(), user);
+            log.info("Пользователь обновлён");
             return user;
         }
-        throw new NoSuchObjectException("ошибка при обновлении user");
+        log.error("Ошибка при обновлении user");
+        throw new NoSuchObjectException("Ошибка при обновлении user");
     }
 
     @Override
@@ -69,9 +75,11 @@ public class InMemoryUserStorage implements UserStorage {
         if (usersMap.containsKey(userId) && usersMap.containsKey(friendId)) {
             usersMap.get(userId).getFriends().add(friendId);
             usersMap.get(friendId).getFriends().add(userId);
+            log.info("К пользователю добавлен друг");
             return usersMap.get(friendId);
         }
-        throw new NoSuchObjectException("ошибка при добавлении в друзья");
+        log.error("Ошибка при добавлении в друзья");
+        throw new NoSuchObjectException("Ошибка при добавлении в друзья");
     }
 
     @Override
@@ -81,9 +89,11 @@ public class InMemoryUserStorage implements UserStorage {
         if (userToUpdate != null && friendToRemove != null) {
             userToUpdate.getFriends().remove(friendId);
             friendToRemove.getFriends().remove(userId);
+            log.info("Удаление одного из друзей");
             return friendToRemove;
         }
-        throw new NoSuchObjectException("ошибка при удалении из друзей");
+        log.error("Ошибка при удалении из друзей");
+        throw new NoSuchObjectException("Ошибка при удалении из друзей");
     }
 
     @Override
@@ -97,9 +107,11 @@ public class InMemoryUserStorage implements UserStorage {
                     sharedUserList) {
                 sharedFriends.add(usersMap.get(id));
             }
+            log.info("Возвращение списка общих друзей");
             return sharedFriends;
         }
-        throw new NoSuchObjectException("ошибка при выполнении поиска общих друзей");
+        log.error("Ошибка при выполнении поиска общих друзей");
+        throw new NoSuchObjectException("Ошибка при выполнении поиска общих друзей");
     }
 
     private void validateUser(User user) throws ValidationException {
@@ -109,13 +121,13 @@ public class InMemoryUserStorage implements UserStorage {
         }
 
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("дата рождения не может быть в будущем");
-            throw new ValidationException("дата рождения не может быть в будущем");
+            log.error("Дата рождения не может быть в будущем");
+            throw new ValidationException("Дата рождения не может быть в будущем");
         }
 
         if (user.getLogin() == null) {
-            log.error("логин не может быть пустым и содержать пробелы");
-            throw new ValidationException("логин не может быть пустым и содержать пробелы");
+            log.error("Логин не может быть пустым и содержать пробелы");
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         }
 
         if ((user.getName() == null)) {
