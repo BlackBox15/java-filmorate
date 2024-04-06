@@ -56,7 +56,20 @@ public class UserDbStorage implements UserStorage{
 
     @Override
     public List<User> getSharedFriends(int userId, int otherId) {
-        return null;
+        String sql = "select FRIEND_ID  from FRIENDSHIP where USER_ID = ? and USER_ID in (select FRIEND_ID from FRIENDSHIP where USER_ID = ?)";
+        List<User> sharedFriends = this.jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> {
+                    User user = new User();
+                    user.setId(Integer.parseInt(resultSet.getString("ID")));
+                    user.setEmail(resultSet.getString("EMAIL"));
+                    user.setLogin(resultSet.getString("LOGIN"));
+                    user.setName(resultSet.getString("NAME"));
+                    user.setBirthday(LocalDate.parse(resultSet.getString("BIRTHDAY")));
+                    return user;
+                },
+                userId);
+        return sharedFriends;
     }
 
     @Override
