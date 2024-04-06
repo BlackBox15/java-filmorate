@@ -61,7 +61,21 @@ public class UserDbStorage implements UserStorage{
 
     @Override
     public List<User> getFriends(int userId) {
-        return null;
+        String sql = "select * from FRIENDSHIP where USER_ID = ?";
+
+        List<User> friends = this.jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> {
+                    User user = new User();
+                    user.setId(Integer.parseInt(resultSet.getString("ID")));
+                    user.setEmail(resultSet.getString("EMAIL"));
+                    user.setLogin(resultSet.getString("LOGIN"));
+                    user.setName(resultSet.getString("NAME"));
+                    user.setBirthday(LocalDate.parse(resultSet.getString("BIRTHDAY")));
+                    return user;
+                },
+                userId);
+        return friends;
     }
 
     @Override
