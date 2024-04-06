@@ -1,53 +1,58 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.dao.user.UserStorage;
 
 import java.util.List;
 
 @Service
 public class UserService {
-    private final UserStorage inMemoryUserStorage;
+    private final UserDbStorage userDbStorage;
 
-    public UserService(UserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(UserDbStorage userDbStorage) {
+        this.userDbStorage = userDbStorage;
     }
 
+//    public UserService(UserStorage inMemoryUserStorage) {
+//        this.inMemoryUserStorage = inMemoryUserStorage;
+//    }
+
     public User findUser(int userId) {
-        return inMemoryUserStorage.findUser(userId);
+        return userDbStorage.findUser(userId);
     }
 
     public List<User> findAllFriends(int userId) {
-        return inMemoryUserStorage.getFriends(userId);
+        return userDbStorage.getFriends(userId);
     }
 
     public User addFriend(int userId, int friendId) {
-        return inMemoryUserStorage.addFriend(userId, friendId);
+        return userDbStorage.addFriend(userId, friendId);
     }
 
     public List<User> getSharedFriends(int id, int otherId) {
-        return inMemoryUserStorage.getSharedFriends(id, otherId);
+        return userDbStorage.getSharedFriends(id, otherId);
     }
 
     public User create(User user) {
-        return inMemoryUserStorage.create(user);
+        return userDbStorage.create(user);
     }
 
     public User update(User user) {
-        return inMemoryUserStorage.update(user);
+        return userDbStorage.update(user);
     }
 
     public User removeFriend(int userId, int friendId) {
-        return inMemoryUserStorage.removeFriend(userId, friendId);
+        return userDbStorage.removeFriend(userId, friendId);
     }
 
     public List<User> findAll() {
-        return inMemoryUserStorage.findAll();
+        return userDbStorage.findAll();
     }
 
     public User remove(User user) {
-        return inMemoryUserStorage.remove(user);
+        return userDbStorage.remove(user);
     }
 
 }
