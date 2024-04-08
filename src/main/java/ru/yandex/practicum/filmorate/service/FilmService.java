@@ -9,7 +9,6 @@ import java.util.List;
 
 @Service
 public class FilmService {
-//    private final FilmStorage inMemoryFilmStorage;
     private final FilmDbStorage filmDbStorage;
 
     public FilmService(FilmDbStorage filmDbStorage) {

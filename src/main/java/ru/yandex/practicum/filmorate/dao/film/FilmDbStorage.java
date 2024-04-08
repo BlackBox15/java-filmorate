@@ -39,15 +39,21 @@ public class FilmDbStorage implements FilmStorage{
     public Film create(Film film) {
         validateNewFilm(film);
 
-        String sqlCreateFilm = "insert into FILM(NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA) values(?, ?, ?, ?, ?)";
+        List<String> allFimNames = allFilmNames();
+
+        if (allFilmNames().contains(film.getName())) {
+            log.error("Фильм уже есть в БД");
+            throw new ValidationException("Фильм уже есть в БД");
+        }
+
+        String sqlCreateFilm = "insert into FILM (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA) values(?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlCreateFilm,
-                film.getName(),
-                film.getDescription(),
-                Date.valueOf(film.getReleaseDate()),
-                film.getDuration(),
-                film.getMpa().getId()
-        );
+                            film.getName(),
+                            film.getDescription(),
+                            Date.valueOf(film.getReleaseDate()),
+                            film.getDuration(),
+                            film.getMpa().getId());
 
         String sqlFilmId = "select * from FILM where NAME = ?";
         int filmId = jdbcTemplate.queryForObject(sqlFilmId, this::mapRowToFilm, film.getName()).getId();
@@ -115,6 +121,10 @@ public class FilmDbStorage implements FilmStorage{
             }
         }
 
+//        String sqlCheckQuery = "select * from FILM where NAME = ?";
+//        Film updatedFilm = jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, film.getName());
+
+//        return updatedFilm;
         return film;
     }
 
@@ -255,9 +265,7 @@ public class FilmDbStorage implements FilmStorage{
         resultFilm.setDescription(rs.getString("DESCRIPTION"));
         resultFilm.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
         resultFilm.setDuration(rs.getInt("DURATION"));
-//        resultFilm.setMpa(rs.getInt("MPA") == null ? mpaDbStorage.findById(rs.getInt("MPA") : null);
         resultFilm.setMpa(mpaDbStorage.findById(rs.getInt("MPA")));
-
         resultFilm.setGenres(genres);
 
         return resultFilm;
@@ -321,7 +329,7 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     private void validateNewFilm(Film film) throws ValidationException {
-        if (film.getName().isEmpty()) {
+        if (film.getName().isEmpty() || film.getName() == null) {
             log.error("Ошибка добавления нового фильма. Пустое название");
             throw new ValidationException("Ошибка добавления нового фильма. Пустое название");
         }
@@ -343,6 +351,7 @@ public class FilmDbStorage implements FilmStorage{
 
         List<Integer> allMpaId = mpaDbStorage.allMpaId();
         List<Integer> allGenres = genreDbStorage.allGenreId();
+
 
         if (!allMpaId.contains(film.getMpa().getId())) {
             log.error("Отсутствует MPA-рейтинг");
@@ -377,6 +386,15 @@ public class FilmDbStorage implements FilmStorage{
                 sqlFilmsId,
                 (resultSet, rowNum) -> {
                     return Integer.parseInt(resultSet.getString("ID"));
+                });
+    }
+
+    public List<String> allFilmNames() {
+        String sqlFilmsId = "select * from FILM";
+        return jdbcTemplate.query(
+                sqlFilmsId,
+                (resultSet, rowNum) -> {
+                    return resultSet.getString("NAME");
                 });
     }
 }
