@@ -60,8 +60,15 @@ public class FilmController {
     @ResponseBody
     public List<Film> findTopTen(@RequestParam(required = false) int count) {
         log.debug("Получен запрос GET на получение списка рейтинговых фильмов");
-        if (count == 0) return filmService.findTopRated();
+        if (count <= 0) return filmService.findTopRated();
         else return filmService.findTopRated(count);
+    }
+
+    @GetMapping(value = { "/{id}"})
+    @ResponseBody
+    public Film findWithGenre(@RequestParam(required = true) int id) {
+        log.debug("Получен запрос GET");
+        return filmService.findWithGenre(id);
     }
 }
 

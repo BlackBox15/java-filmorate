@@ -14,6 +14,8 @@ public interface FilmStorage {
 
     Film likeFilm(int filmId, int userId);
 
+    Film findWithGenre(int filmId);
+
     Film deleteLike(int filmId, int userId);
 
     List<Film> findTopRated(int count);

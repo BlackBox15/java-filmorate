@@ -15,10 +15,6 @@ public class UserService {
         this.userDbStorage = userDbStorage;
     }
 
-//    public UserService(UserStorage inMemoryUserStorage) {
-//        this.inMemoryUserStorage = inMemoryUserStorage;
-//    }
-
     public User findUser(int userId) {
         return userDbStorage.findUser(userId);
     }
@@ -31,8 +27,8 @@ public class UserService {
         return userDbStorage.addFriend(userId, friendId);
     }
 
-    public List<User> getSharedFriends(int id, int otherId) {
-        return userDbStorage.getSharedFriends(id, otherId);
+    public List<User> getCommonFriends(int id, int otherId) {
+        return userDbStorage.getCommonFriends(id, otherId);
     }
 
     public User create(User user) {
