@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -39,7 +38,23 @@ public class FilmDbStorage implements FilmStorage{
     public Film create(Film film) {
         validateNewFilm(film);
 
+        List<Integer> allMpaId = mpaDbStorage.allMpaId();
+        List<Integer> allGenres = genreDbStorage.allGenreId();
         List<String> allFimNames = allFilmNames();
+
+        if (!allMpaId.contains(film.getMpa().getId())) {
+            log.error("Отсутствует MPA-рейтинг");
+            throw new ValidationException("Отсутствует MPA-рейтинг");
+        }
+
+        if (film.getGenres() != null) {
+            for (Genre genre: film.getGenres()) {
+                if (!allGenres.contains(genre.getId())) {
+                    log.error("Отсутствует Genres");
+                    throw new ValidationException("Отсутствует Genres");
+                }
+            }
+        }
 
         if (allFilmNames().contains(film.getName())) {
             log.error("Фильм уже есть в БД");
@@ -96,7 +111,30 @@ public class FilmDbStorage implements FilmStorage{
      */
     @Override
     public Film update(Film film) {
-        validateUpdateFilm(film);
+        validateNewFilm(film);
+
+        if (!allFilmId().contains(film.getId())) {
+            log.error("Отсутствует Id");
+            throw new NoSuchObjectException("Отсутствует Id");
+        }
+
+
+
+//        if (film.getGenres() == null) {
+//            log.error("Отсутствует Genres");
+//            throw new NoSuchObjectException("Отсутствует Genres");
+//        }
+//
+//        List<Integer> allMpaId = mpaDbStorage.allMpaId();
+//        if (!allMpaId.contains(film.getMpa().getId())) {
+//            log.error("Отсутствует MPA-рейтинг");
+//            throw new NoSuchObjectException("Отсутствует MPA-рейтинг");
+//        }
+//
+//        if (!allFilmNames().contains(film.getName())) {
+//            log.error("Нет фильма в БД");
+//            throw new NoSuchObjectException("Нет фильма в БД");
+//        }
 
         String sql = "update FILM set DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where ID = ?";
 
@@ -121,6 +159,7 @@ public class FilmDbStorage implements FilmStorage{
                 );
             }
         }
+
         return film;
     }
 
@@ -265,38 +304,6 @@ public class FilmDbStorage implements FilmStorage{
         resultFilm.setGenres(genres);
 
         return resultFilm;
-
-//        String sqlForFilmGenre = "select * from GENRE where ID in (select GENRE_ID from FILM_GENRE where FILM_ID = ?)";
-
-//        List<Genre> genres = jdbcTemplate.query(
-//                sqlForFilmGenre,
-//                (rs, rowNum) -> {
-//                    Genre genre = new Genre();
-//                    genre.setId(Integer.parseInt(rs.getString("ID");
-//                    genre.setGenre(rs.getString("GENRE"));
-//
-//                },
-//                rs.getInt("ID"));
-
-//        resultFilm.setId(rs.getInt("ID"));
-//        resultFilm.setName(rs.getString("NAME"));
-//        resultFilm.setDescription(rs.getString("DESCRIPTION"));
-//        resultFilm.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
-//        resultFilm.setDuration(Integer.parseInt(rs.getString("DURATION")));
-//        resultFilm.getMpa().setId(Integer.parseInt(rs.getString("MPA")));
-//
-////        resultFilm.getMpa().setId(Integer.parseInt(rs.getString("MPA")));
-//
-////        List<Genre> genres = jdbcTemplate.query(sqlForFilmGenre,
-////                (resultSet, rowNumbers) -> {
-////                    Genre genre = new Genre();
-////                    genre.setId(Integer.parseInt(resultSet.getString("ID"));
-////                    genre.setGenre(resultSet.getString("GENRE"));
-////                },
-////                rs.getInt("ID"));
-//
-//
-//        return resultFilm;
     }
 
     private Genre mapRowToGenres(ResultSet resultSet, Integer rowNum) throws SQLException {
@@ -345,8 +352,7 @@ public class FilmDbStorage implements FilmStorage{
             throw new ValidationException("Ошибка добавления нового фильма. Отрицательная продолжительность");
         }
 
-        List<Integer> allMpaId = mpaDbStorage.allMpaId();
-        List<Integer> allGenres = genreDbStorage.allGenreId();
+
 
 
 //        if (!allMpaId.contains(film.getMpa().getId())) {
@@ -369,17 +375,6 @@ public class FilmDbStorage implements FilmStorage{
 //        }
 
 
-    }
-
-    private void validateUpdateFilm(Film film) throws ValidationException {
-        validateNewFilm(film);
-
-        List<Integer> allFilmId = this.allFilmId();
-
-        if (!allFilmId.contains(film.getId())) {
-            log.error("Неизвестный ID фильма");
-            throw new NoSuchObjectException("Неизвестный ID фильма");
-        }
     }
 
     public List<Integer> allFilmId() {
