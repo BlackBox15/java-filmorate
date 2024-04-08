@@ -119,28 +119,9 @@ public class FilmDbStorage implements FilmStorage {
             throw new NoSuchObjectException("Отсутствует Id");
         }
 
-
-
-//        if (film.getGenres() == null) {
-//            log.error("Отсутствует Genres");
-//            throw new NoSuchObjectException("Отсутствует Genres");
-//        }
-//
-//        List<Integer> allMpaId = mpaDbStorage.allMpaId();
-//        if (!allMpaId.contains(film.getMpa().getId())) {
-//            log.error("Отсутствует MPA-рейтинг");
-//            throw new NoSuchObjectException("Отсутствует MPA-рейтинг");
-//        }
-//
-//        if (!allFilmNames().contains(film.getName())) {
-//            log.error("Нет фильма в БД");
-//            throw new NoSuchObjectException("Нет фильма в БД");
-//        }
-
         String sql = "update FILM set DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where ID = ?";
 
         jdbcTemplate.update(sql,
-//                film.getName(),
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
@@ -240,9 +221,6 @@ public class FilmDbStorage implements FilmStorage {
 
         return result;
     }
-
-
-
 
     @Override
     public List<Film> findTopRated() {
