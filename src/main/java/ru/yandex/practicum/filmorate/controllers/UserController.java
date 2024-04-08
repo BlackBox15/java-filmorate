@@ -43,7 +43,6 @@ public class UserController {
         return userService.findAll();
     }
 
-
     @GetMapping("/{id}")
     @ResponseBody
     public User findUser(@PathVariable int id) {
