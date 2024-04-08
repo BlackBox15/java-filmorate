@@ -98,10 +98,10 @@ public class FilmDbStorage implements FilmStorage{
     public Film update(Film film) {
         validateUpdateFilm(film);
 
-        String sql = "update FILM set NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where ID = ?";
+        String sql = "update FILM set DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where ID = ?";
 
         jdbcTemplate.update(sql,
-                film.getName(),
+//                film.getName(),
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
@@ -121,11 +121,6 @@ public class FilmDbStorage implements FilmStorage{
                 );
             }
         }
-
-//        String sqlCheckQuery = "select * from FILM where NAME = ?";
-//        Film updatedFilm = jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, film.getName());
-
-//        return updatedFilm;
         return film;
     }
 
@@ -358,18 +353,21 @@ public class FilmDbStorage implements FilmStorage{
 //            log.error("Отсутствует MPA-рейтинг");
 //            throw new ValidationException("Отсутствует MPA-рейтинг");
 //        }
-//
-//        if (film.getGenres() == null || film.getGenres().size() == 0) {
+
+//        if (film.getGenres() == null) {
 //            log.error("Отсутствует Genres");
 //            throw new ValidationException("Отсутствует Genres");
 //        }
-//
-//        for (Genre genre: film.getGenres()) {
-//            if (!allGenres.contains(genre.getId())) {
-//                log.error("Отсутствует Genres");
-//                throw new ValidationException("Отсутствует Genres");
+
+//        if (film.getGenres() != null) {
+//            for (Genre genre: film.getGenres()) {
+//                if (!allGenres.contains(genre.getId())) {
+//                    log.error("Отсутствует Genres");
+//                    throw new ValidationException("Отсутствует Genres");
+//                }
 //            }
 //        }
+
 
     }
 
