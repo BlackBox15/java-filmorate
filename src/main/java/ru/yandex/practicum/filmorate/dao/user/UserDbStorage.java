@@ -212,7 +212,7 @@ public class UserDbStorage implements UserStorage{
      */
     @Override
     public List<User> findAll() {
-        String sql = "select * from USERS order by ID asc ";
+        String sql = "select * from USERS order by ID";
 
         return this.jdbcTemplate.query(
                 sql,
@@ -233,7 +233,7 @@ public class UserDbStorage implements UserStorage{
      * @param rs результат запроса
      * @param rowNum число строк в результате запроса
      * @return объект пользователя
-     * @throws SQLException
+     * @throws SQLException выбрасывается исключение
      */
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
         User resultUser = new User();
@@ -249,7 +249,7 @@ public class UserDbStorage implements UserStorage{
 
     /**
      * Первоначальная проверка аргумента
-     * @param user
+     * @param user объект для проверки
      * @throws ValidationException выброс исключения при наличии ошибки в аргументе
      */
     private void validateUser(User user) throws ValidationException {
