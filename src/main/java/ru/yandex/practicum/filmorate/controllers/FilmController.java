@@ -64,7 +64,7 @@ public class FilmController {
         else return filmService.findTopRated(count);
     }
 
-    @GetMapping( "/{id}")
+    @GetMapping("/{id}")
     @ResponseBody
     public Film findWithGenre(@PathVariable int id) {
         log.debug("Получен запрос GET");
