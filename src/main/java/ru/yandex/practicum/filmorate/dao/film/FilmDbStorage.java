@@ -329,30 +329,6 @@ public class FilmDbStorage implements FilmStorage {
             log.error("Ошибка добавления нового фильма. Отрицательная продолжительность");
             throw new ValidationException("Ошибка добавления нового фильма. Отрицательная продолжительность");
         }
-
-
-
-
-//        if (!allMpaId.contains(film.getMpa().getId())) {
-//            log.error("Отсутствует MPA-рейтинг");
-//            throw new ValidationException("Отсутствует MPA-рейтинг");
-//        }
-
-//        if (film.getGenres() == null) {
-//            log.error("Отсутствует Genres");
-//            throw new ValidationException("Отсутствует Genres");
-//        }
-
-//        if (film.getGenres() != null) {
-//            for (Genre genre: film.getGenres()) {
-//                if (!allGenres.contains(genre.getId())) {
-//                    log.error("Отсутствует Genres");
-//                    throw new ValidationException("Отсутствует Genres");
-//                }
-//            }
-//        }
-
-
     }
 
     public List<Integer> allFilmId() {
