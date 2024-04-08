@@ -238,27 +238,6 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select * from FILM where ID = ?";
         result = jdbcTemplate.queryForObject(sql, this::mapRowToFilm, filmId);
 
-//        String sqlFromFilmGenre = "select GENRE_ID from FILM_GENRE where FILM_ID = ?";
-//        List<Integer> genresForFilm = jdbcTemplate.query(
-//                sqlFromFilmGenre,
-//                (resultSet, rowNum) -> {
-//                    return Integer.parseInt(resultSet.getString("GENRE_ID"));
-//                }, filmId);
-
-//        if (result.getGenres() != null) {
-//            for (Genre oneGenre : result.getGenres()) {
-//                String sqlForGenre = "select GENRE from GENRE where ID = ?";
-//                jdbcTemplate.queryForObject(sql, this::mapRowToGenres, oneGenre.getId());
-//
-//
-//
-//                jdbcTemplate.update(sqlForAddingGenre,
-//                        oneGenre.getId(),
-//                        filmId
-//                );
-//            }
-//        }
-
         return result;
     }
 
