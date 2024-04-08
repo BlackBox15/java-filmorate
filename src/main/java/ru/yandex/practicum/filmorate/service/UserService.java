@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.dao.user.UserStorage;
 
 import java.util.List;
 
@@ -50,5 +49,4 @@ public class UserService {
     public User remove(User user) {
         return userDbStorage.remove(user);
     }
-
 }
