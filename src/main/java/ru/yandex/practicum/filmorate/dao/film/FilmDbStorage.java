@@ -287,8 +287,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Genre mapRowToGenres(ResultSet resultSet, Integer rowNum) throws SQLException {
-        int testInt = resultSet.getInt("GENRE_ID");
-
         return genreDbStorage.findById(resultSet.getInt("GENRE_ID"));
     }
 
