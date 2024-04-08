@@ -19,7 +19,7 @@ import java.util.List;
 
 @Repository
 @Slf4j
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genreDbStorage;
     private final MpaDbStorage mpaDbStorage;
@@ -29,6 +29,7 @@ public class FilmDbStorage implements FilmStorage{
         this.genreDbStorage = genreDbStorage;
         this.mpaDbStorage = mpaDbStorage;
     }
+
     /**
      * Создание новой записи в таблице пользователей.
      * @param film объект фильма
