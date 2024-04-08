@@ -98,14 +98,15 @@ public class FilmDbStorage implements FilmStorage{
     public Film update(Film film) {
         validateUpdateFilm(film);
 
-        String sql = "update FILM set DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where NAME = ?";
+        String sql = "update FILM set NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where ID = ?";
 
         jdbcTemplate.update(sql,
+                film.getName(),
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
                 film.getMpa().getId(),
-                film.getName()
+                film.getId()
         );
 
         String sqlFilmId = "select * from FILM where NAME = ?";
@@ -353,19 +354,22 @@ public class FilmDbStorage implements FilmStorage{
         List<Integer> allGenres = genreDbStorage.allGenreId();
 
 
-        if (!allMpaId.contains(film.getMpa().getId())) {
-            log.error("Отсутствует MPA-рейтинг");
-            throw new ValidationException("Отсутствует MPA-рейтинг");
-        }
-
-        if (film.getGenres() != null) {
-            for (Genre genre: film.getGenres()) {
-                if (!allGenres.contains(genre.getId())) {
-                    log.error("Отсутствует Genres");
-                    throw new ValidationException("Отсутствует Genres");
-                }
-            }
-        }
+//        if (!allMpaId.contains(film.getMpa().getId())) {
+//            log.error("Отсутствует MPA-рейтинг");
+//            throw new ValidationException("Отсутствует MPA-рейтинг");
+//        }
+//
+//        if (film.getGenres() == null || film.getGenres().size() == 0) {
+//            log.error("Отсутствует Genres");
+//            throw new ValidationException("Отсутствует Genres");
+//        }
+//
+//        for (Genre genre: film.getGenres()) {
+//            if (!allGenres.contains(genre.getId())) {
+//                log.error("Отсутствует Genres");
+//                throw new ValidationException("Отсутствует Genres");
+//            }
+//        }
 
     }
 
