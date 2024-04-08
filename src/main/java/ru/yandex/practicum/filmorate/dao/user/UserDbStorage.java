@@ -117,7 +117,6 @@ public class UserDbStorage implements UserStorage {
      */
     @Override
     public User addFriend(int userId, int friendId) {
-        
         validateUserId(userId);
         validateUserId(friendId);
 
