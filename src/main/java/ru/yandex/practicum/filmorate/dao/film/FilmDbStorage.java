@@ -220,13 +220,13 @@ public class FilmDbStorage implements FilmStorage {
                     return resultSet.getInt("FILM_ID");
                 }, count);
 
-        List<Film> ratedFims = new ArrayList<>();
+        List<Film> topRatedFilms = new ArrayList<>();
         for (Integer filmId : ratedFilms) {
             String sqlListRatedFilms = "select * from FILM where ID = ?";
-            ratedFims.add(jdbcTemplate.queryForObject(sqlListRatedFilms, this::mapRowToFilm, filmId));
+            topRatedFilms.add(jdbcTemplate.queryForObject(sqlListRatedFilms, this::mapRowToFilm, filmId));
         }
 
-        return ratedFims;
+        return topRatedFilms;
     }
 
     @Override
