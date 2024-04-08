@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.dao.film.FilmStorage;
 
 import java.util.List;
 
@@ -50,6 +49,4 @@ public class FilmService {
     public Film findWithGenre(int filmId) {
         return filmDbStorage.findWithGenre(filmId);
     }
-
-
 }
