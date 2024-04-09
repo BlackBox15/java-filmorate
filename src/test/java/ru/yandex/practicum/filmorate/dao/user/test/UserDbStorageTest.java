@@ -38,4 +38,28 @@ class UserDbStorageTest {
                 .usingRecursiveComparison() // проверяем, что значения полей нового
                 .isEqualTo(newUser);        // и сохраненного пользователя - совпадают
     }
+
+    @Test
+    public void testFindAllUsers() {
+        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+
+        User user = userStorage.findUser(1);
+
+        User updatedUser = new User();
+        updatedUser.setId(2);
+        updatedUser.setEmail("mail@mail.mail");
+        updatedUser.setLogin("master3333");
+        updatedUser.setName("Роман");
+        updatedUser.setBirthday(LocalDate.of(1997, 1, 1));
+        userStorage.update(updatedUser);
+
+        User userFromDb = userStorage.findUser(2);
+
+        userStorage.update(user);
+
+        assertThat(userFromDb)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(updatedUser);
+    }
 }

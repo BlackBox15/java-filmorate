@@ -83,11 +83,11 @@ public class FilmDbStorage implements FilmStorage {
                 );
             }
         }
+//
+//        String sqlCheckQuery = "select * from FILM where NAME = ?";
+//        Film updatedFilm = jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, film.getName());
 
-        String sqlCheckQuery = "select * from FILM where NAME = ?";
-        Film updatedFilm = jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, film.getName());
-
-        return updatedFilm;
+        return film;
     }
 
     /**
