@@ -10,9 +10,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,12 +29,6 @@ public class FilmService {
     }
 
     public Film create(Film film) {
-//        Integer filmId = film.getId();
-
-//        if (filmDbStorage.findAll().stream().anyMatch((f) -> f.getName().equals(film.getName()))) {
-//            throw new ValidationException("Фильм с таким названием уже существует");
-//        }
-
         if (film.getId() != null) {
             throw new NoSuchObjectException("Объект с ID нельзя добавить через create");
         }
@@ -44,12 +36,6 @@ public class FilmService {
         if (filmDbStorage.allFilmId().contains(film.getId())) {
             throw new NoSuchObjectException("Фильм с таким ID уже существует!");
         }
-
-//        if (filmId != null && filmDbStorage.allFilmId().contains(filmId)) {
-//            throw new NoSuchObjectException("Фильм с таким ID уже существует!");
-//        } else if (filmId != null && filmId < 0) {
-//            throw new IllegalArgumentException("отрицательный ID");
-//        }
 
         if (!mpaDbStorage.allMpaId().contains(film.getMpa().getId())) {
             log.error("некорректный MPA");
@@ -63,7 +49,7 @@ public class FilmService {
                     throw new ValidationException("Отсутствует Genres");
                 }
             }
-            // удаление дубликатов id жанров
+
             List<Genre> noDuplicates = film.getGenres()
                     .stream()
                     .distinct()
@@ -79,7 +65,6 @@ public class FilmService {
             throw new NoSuchObjectException("Отсутствует или введён несуществующий Id");
         }
 
-        // проверка на вхождение id жанров в допустимый перечень
         if (film.getGenres() != null) {
             for (Genre genre: film.getGenres()) {
                 if (!genreDbStorage.allGenreId().contains(genre.getId())) {

@@ -47,31 +47,22 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId());
 
-//        Integer filmIdFromDbother = Integer.parseInt((jdbcTemplate.queryForObject(currentFilmsFromDb, String.class, film.getName())));
         Film filmFromDd = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
         int filmId = filmFromDd.getId();
 
-        // обновляем таблицу FILM_GENRE, внося данные из аргумента
         if (film.getGenres() != null) {
             for (Genre oneGenre : film.getGenres()) {
                 jdbcTemplate.update(newFilmGenreRow, oneGenre.getId(), filmId);
             }
         }
-//        else {
-//            jdbcTemplate.update(newFilmGenreRow,
-//                    0,
-//                    filmId
-//            );
-//        }
 
-        // получаем Film из БД со всеми заполненными полями
         Film filmFromDb = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
         film.setId(filmFromDb.getId());
 
         return filmFromDb;
     }
 
-        /**
+    /**
      * Удаление записи из таблицы фильмов
      * @param film объект фильм, подлежащий удалению
      */
@@ -116,7 +107,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     /**
-     * Список всех
+     * Получение списка всех фильмов
      * @return список всех фильмов
      */
     @Override
@@ -224,7 +215,6 @@ public class FilmDbStorage implements FilmStorage {
 
     /**
      * Формирование объекта фильм из результата запроса.
-     * <br>Используется для проверочного вывода объека фильм, как результат работы публичных методов
      * @param rs результат запроса
      * @param rowNum число строк в результате запроса
      * @return объект фильм
@@ -250,7 +240,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, Integer rowNum) throws SQLException {
-        Integer genreId = resultSet.getInt("GENRE_ID");
+        int genreId = resultSet.getInt("GENRE_ID");
         if (genreId == 0) {
             return null;
         }
@@ -272,28 +262,6 @@ public class FilmDbStorage implements FilmStorage {
 
         if (!ids.contains(userId)) {
             throw new NoSuchObjectException("Пользователь с ID не найден в БД.");
-        }
-    }
-
-    private void validateNewFilm(Film film) throws ValidationException {
-        if (film.getName().isEmpty() || film.getName() == null) {
-            log.error("Ошибка добавления нового фильма. Пустое название");
-            throw new ValidationException("Ошибка добавления нового фильма. Пустое название");
-        }
-
-        if (film.getDescription().length() > 200) {
-            log.error("Ошибка добавления нового фильма. Превышена максимальная длина описания");
-            throw new ValidationException("Ошибка добавления нового фильма. Превышена максимальная длина описания");
-        }
-
-        if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
-            log.error("Ошибка добавления нового фильма. Дата релиза");
-            throw new ValidationException("Ошибка добавления нового фильма. Дата релиза");
-        }
-
-        if (film.getDuration() < 0) {
-            log.error("Ошибка добавления нового фильма. Отрицательная продолжительность");
-            throw new ValidationException("Ошибка добавления нового фильма. Отрицательная продолжительность");
         }
     }
 
