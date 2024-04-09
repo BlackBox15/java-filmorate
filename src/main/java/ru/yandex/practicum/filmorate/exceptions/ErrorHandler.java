@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controllers.ErrorResponse;
 
-@RestControllerAdvice(value = "ru.yandex.practicum.filmorate.controllers")
+@RestControllerAdvice(value = "ru.yandex.practicum.filmorate")
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

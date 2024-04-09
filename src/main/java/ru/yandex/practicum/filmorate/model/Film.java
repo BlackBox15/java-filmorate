@@ -7,11 +7,11 @@ import java.util.List;
 
 @Data
 public class Film {
-    private int id;
+    private Integer id;
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private int duration;
+    private Integer duration;
     private Mpa mpa;
     private List<Genre> genres;
 }

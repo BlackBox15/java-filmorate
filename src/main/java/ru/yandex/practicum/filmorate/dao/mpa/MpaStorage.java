@@ -8,4 +8,6 @@ public interface MpaStorage {
     List<Mpa> findAll();
 
     Mpa findById(int mpaId);
+
+    List<Integer> allMpaId();
 }

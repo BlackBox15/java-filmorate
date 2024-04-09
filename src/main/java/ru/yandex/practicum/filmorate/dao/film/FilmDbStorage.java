@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -31,38 +32,52 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     /**
-     * Создание новой записи в таблице пользователей.
+     * Создание новой записи в таблице фильмов.
      * @param film объект фильма
-     * @return объект фильм, полученный из БД
+     * @return возврат входящего аргумента
      */
     @Override
     public Film create(Film film) {
+        String sqlCreateFilm = "insert into FILM (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA) values(?, ?, ?, ?, ?)";
+        String sqlForAddingGenre = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values(?, ?)";
+        List<Integer> allGenresId = genreDbStorage.allGenreId();
+
         validateNewFilm(film);
 
-        List<Integer> allMpaId = mpaDbStorage.allMpaId();
-        List<Integer> allGenres = genreDbStorage.allGenreId();
-        List<String> allFimNames = allFilmNames();
+        Integer testFilmMpaID = film.getMpa().getId();
+        List<Integer> testMpaListIds = mpaDbStorage.allMpaId();
 
-        if (!allMpaId.contains(film.getMpa().getId())) {
-            log.error("Отсутствует MPA-рейтинг");
-            throw new ValidationException("Отсутствует MPA-рейтинг");
+        boolean testFlag = mpaDbStorage.allMpaId().contains(film.getMpa().getId());
+
+        if (!mpaDbStorage.allMpaId().contains(film.getMpa().getId())) {
+            log.error("Отсутствует или некорректный MPA-рейтинг");
+            throw new NoSuchObjectException("Отсутствует или некорректный MPA-рейтинг");
         }
+
+
+//        if (!mpaDbStorage.findAll().contains(film.getMpa().getId())) {
+//            log.error("Отсутствует MPA-рейтинг");
+//            throw new ValidationException("Отсутствует MPA-рейтинг");
+//        }
 
         if (film.getGenres() != null) {
             for (Genre genre: film.getGenres()) {
-                if (!allGenres.contains(genre.getId())) {
+                if (!allGenresId.contains(genre.getId())) {
                     log.error("Отсутствует Genres");
                     throw new ValidationException("Отсутствует Genres");
                 }
             }
+        } else {
+            log.error("Отсутствует Genres");
+            throw new ValidationException("Отсутствует Genres");
         }
 
-        if (allFilmNames().contains(film.getName())) {
-            log.error("Фильм уже есть в БД");
-            throw new ValidationException("Фильм уже есть в БД");
+        for (Film oneFilm: findAll()) {
+            if (film.getName().equals(oneFilm.getName())) {
+                log.error("Фильм уже есть в БД");
+                throw new ValidationException("Фильм уже есть в БД");
+            }
         }
-
-        String sqlCreateFilm = "insert into FILM (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA) values(?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlCreateFilm,
                             film.getName(),
@@ -74,15 +89,15 @@ public class FilmDbStorage implements FilmStorage {
         String sqlFilmId = "select * from FILM where NAME = ?";
         int filmId = jdbcTemplate.queryForObject(sqlFilmId, this::mapRowToFilm, film.getName()).getId();
 
-        if (film.getGenres() != null) {
-            for (Genre oneGenre : film.getGenres()) {
-                String sqlForAddingGenre = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values(?, ?)";
-                jdbcTemplate.update(sqlForAddingGenre,
-                        oneGenre.getId(),
-                        filmId
-                );
-            }
+        for (Genre oneGenre : film.getGenres()) {
+            jdbcTemplate.update(sqlForAddingGenre,
+                    oneGenre.getId(),
+                    filmId
+            );
         }
+
+        film.setId(filmId);
+
 //
 //        String sqlCheckQuery = "select * from FILM where NAME = ?";
 //        Film updatedFilm = jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, film.getName());
@@ -129,8 +144,10 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId()
         );
 
-        String sqlFilmId = "select * from FILM where NAME = ?";
-        int filmId = jdbcTemplate.queryForObject(sqlFilmId, this::mapRowToFilm, film.getName()).getId();
+//        String sqlFilmId = "select * from FILM where NAME = ?";
+//        int filmId = jdbcTemplate.queryForObject(sqlFilmId, this::mapRowToFilm, film.getName()).getId();
+
+        int filmId = film.getId();
 
         if (film.getGenres() != null) {
             for (Genre oneGenre : film.getGenres()) {
@@ -151,7 +168,7 @@ public class FilmDbStorage implements FilmStorage {
      */
     @Override
     public List<Film> findAll() {
-        String sql = "select * from FILM order by ID asc ";
+        String sql = "select * from FILM order by ID";
 
         return this.jdbcTemplate.query(
                 sql,

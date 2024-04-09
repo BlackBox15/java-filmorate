@@ -35,11 +35,13 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Mpa findById(int mpaId) {
-        if (!allMpaId().contains(mpaId)) {
-            log.error("Отсутствует MPA-рейтинг");
-            throw new NoSuchObjectException("Отсутствует MPA-рейтинг");
-        }
         String sql = "select * from MPA where ID = ?";
+
+//        if (!allMpaId().contains(mpaId)) {
+//            log.error("Отсутствует MPA-рейтинг");
+//            throw new NoSuchObjectException("Отсутствует MPA-рейтинг");
+//        }
+
         return jdbcTemplate.queryForObject(sql, this::mapRowMpa, mpaId);
     }
 
@@ -50,6 +52,7 @@ public class MpaDbStorage implements MpaStorage {
         return result;
     }
 
+    @Override
     public List<Integer> allMpaId() {
         String sqlMpa = "select ID from MPA";
         return jdbcTemplate.query(
