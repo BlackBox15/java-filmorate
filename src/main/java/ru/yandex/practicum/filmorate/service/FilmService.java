@@ -31,13 +31,25 @@ public class FilmService {
     }
 
     public Film create(Film film) {
-        Integer filmId = film.getId();
+//        Integer filmId = film.getId();
 
-        if (filmId != null && filmDbStorage.allFilmId().contains(filmId)) {
-            throw new NoSuchObjectException("Фильм с таким ID уже существует!");
-        } else if (filmId != null && filmId < 0) {
-            throw new IllegalArgumentException("отрицательный ID");
+//        if (filmDbStorage.findAll().stream().anyMatch((f) -> f.getName().equals(film.getName()))) {
+//            throw new ValidationException("Фильм с таким названием уже существует");
+//        }
+
+        if (film.getId() != null) {
+            throw new NoSuchObjectException("Объект с ID нельзя добавить через create");
         }
+
+        if (filmDbStorage.allFilmId().contains(film.getId())) {
+            throw new NoSuchObjectException("Фильм с таким ID уже существует!");
+        }
+
+//        if (filmId != null && filmDbStorage.allFilmId().contains(filmId)) {
+//            throw new NoSuchObjectException("Фильм с таким ID уже существует!");
+//        } else if (filmId != null && filmId < 0) {
+//            throw new IllegalArgumentException("отрицательный ID");
+//        }
 
         if (!mpaDbStorage.allMpaId().contains(film.getMpa().getId())) {
             log.error("некорректный MPA");
@@ -105,6 +117,10 @@ public class FilmService {
     }
 
     public Film findWithGenre(int filmId) {
+        if (!filmDbStorage.allFilmId().contains(filmId)) {
+            log.error("Отсутствует или введён несуществующий Id");
+            throw new NoSuchObjectException("Отсутствует или введён несуществующий Id");
+        }
         return filmDbStorage.findWithGenre(filmId);
     }
 }
