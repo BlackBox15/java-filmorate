@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dao.mpa;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
@@ -34,6 +35,10 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Mpa findById(int mpaId) {
+        if (!allMpaId().contains(mpaId)) {
+            log.error("Отсутствует MPA-рейтинг");
+            throw new NoSuchObjectException("Отсутствует MPA-рейтинг");
+        }
         String sql = "select * from MPA where ID = ?";
         return jdbcTemplate.queryForObject(sql, this::mapRowMpa, mpaId);
     }
