@@ -80,8 +80,8 @@ public class FilmDbStorage implements FilmStorage {
      */
     @Override
     public void remove(Film film) {
-        String deleFilmInDb = "delete from FILMS where NAME = ?";
-        jdbcTemplate.update(deleFilmInDb, film.getName());
+        String deleteFilmFromDb = "delete from FILMS where NAME = ?";
+        jdbcTemplate.update(deleteFilmFromDb, film.getName());
     }
 
     /**
