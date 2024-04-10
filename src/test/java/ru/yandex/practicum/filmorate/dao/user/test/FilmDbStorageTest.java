@@ -124,7 +124,7 @@ public class FilmDbStorageTest {
         film1.setId(oldFilm.getId());
 
         film1.setReleaseDate(LocalDate.parse("1980-03-03"));
-        Film newFilm = filmDbStorage.update(film1);
+        filmDbStorage.update(film1);
 
         assertThat(filmDbStorage.findAll().get(0).getName()).isEqualTo(oldFilm.getName());
         assertThat(filmDbStorage.findAll().get(0).getDescription()).isEqualTo(oldFilm.getDescription());
@@ -132,4 +132,40 @@ public class FilmDbStorageTest {
         assertThat(filmDbStorage.findAll().get(0).getReleaseDate()).isNotEqualTo(oldFilm.getReleaseDate());
         assertThat(filmDbStorage.findAll().get(0).getReleaseDate()).isEqualTo(film1.getReleaseDate());
     }
+
+    @Test
+    public void testDeleteFilm() {
+        GenreDbStorage genreDbStorage = new GenreDbStorage(jdbcTemplate);
+        MpaDbStorage mpaDbStorage = new MpaDbStorage(jdbcTemplate);
+        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate, genreDbStorage, mpaDbStorage);
+
+        Film film1 = new Film();
+        film1.setName("Ну погоди");
+        film1.setDuration(50);
+        film1.setReleaseDate(LocalDate.parse("1980-01-01"));
+        Mpa mpa = new Mpa();
+        mpa.setId(3);
+        film1.setMpa(mpa);
+
+        Film film2 = new Film();
+        film2.setName("Ну погоди 2");
+        film2.setDuration(50);
+        film2.setReleaseDate(LocalDate.parse("1984-01-01"));
+        film2.setMpa(mpa);
+
+        Film checkedFilm1 = filmDbStorage.create(film1);
+        film1.setId(checkedFilm1.getId());
+
+        Film checkedFilm2 = filmDbStorage.create(film2);
+        film2.setId(checkedFilm2.getId());
+
+        filmDbStorage.remove(film1);
+
+        assertThat(filmDbStorage.findAll().size()).isEqualTo(1);
+        assertThat(filmDbStorage.findAll().get(0).getName()).isEqualTo(film2.getName());
+        assertThat(filmDbStorage.findAll().get(0).getDuration()).isEqualTo(film2.getDuration());
+        assertThat(filmDbStorage.findAll().get(0).getId()).isEqualTo(film2.getId());
+        assertThat(filmDbStorage.findAll().get(0).getReleaseDate()).isEqualTo(film2.getReleaseDate());
+    }
+
 }
