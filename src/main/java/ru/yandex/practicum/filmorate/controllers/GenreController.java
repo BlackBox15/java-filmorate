@@ -28,6 +28,7 @@ public class GenreController {
     @ResponseBody
     public Genre findById(@PathVariable int id) {
         log.debug("GET на получение жанра с id {}", id);
+
         return genreService.findById(id);
     }
 }

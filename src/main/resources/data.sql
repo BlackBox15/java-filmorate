@@ -1,9 +1,3 @@
--- INSERT INTO RATING (RATING)
--- VALUES ('G'),
---        ('PG'),
---        ('PG-13'),
---        ('R'),
---        ('NC-17');
 MERGE INTO MPA KEY(ID)
 VALUES (1, 'G'),
        (2, 'PG'),
