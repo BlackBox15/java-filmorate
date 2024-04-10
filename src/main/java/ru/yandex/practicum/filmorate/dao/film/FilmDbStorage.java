@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.dao.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.genre.GenreDbStorage;
@@ -39,24 +42,53 @@ public class FilmDbStorage implements FilmStorage {
         String newFilmGenreRow = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values(?, ?)";
         String currentFilmsFromDb = "select * from FILMS where NAME = ? order by ID desc limit 1";
 
-        jdbcTemplate.update(newFilmToDd,
-                film.getName(),
-                film.getDescription(),
-                Date.valueOf(film.getReleaseDate()),
-                film.getDuration(),
-                film.getMpa().getId());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(newFilmToDd, new String[]{"FILM_ID"});
+            stmt.setString(1, film.getName());
+            stmt.setString(2, film.getDescription());
+            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+            stmt.setInt(4, film.getDuration());
+            stmt.setInt(5, film.getMpa().getId());
+            return stmt;
+        }, keyHolder);
+        film.setId(keyHolder.getKey().intValue());
 
-        Film filmFromDd = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
-        int filmId = filmFromDd.getId();
+//        jdbcTemplate.update(newFilmToDd,
+//                film.getName(),
+//                film.getDescription(),
+//                Date.valueOf(film.getReleaseDate()),
+//                film.getDuration(),
+//                film.getMpa().getId());
 
+//        Film filmFromDd = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
+//        int filmId = filmFromDd.getId();
+
+//        if (film.getGenres() != null) {
+//            for (Genre oneGenre : film.getGenres()) {
+//                jdbcTemplate.update(newFilmGenreRow, oneGenre.getId(), film.getId());
+//            }
+//        }
+//
         if (film.getGenres() != null) {
-            for (Genre oneGenre : film.getGenres()) {
-                jdbcTemplate.update(newFilmGenreRow, oneGenre.getId(), filmId);
-            }
+            jdbcTemplate.batchUpdate(newFilmGenreRow, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                    preparedStatement.setInt(1, film.getGenres().get(i).getId());
+                    preparedStatement.setInt(2, film.getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return film.getGenres().size();
+                }
+            });
         }
 
+
+
         Film filmFromDb = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
-        film.setId(filmFromDb.getId());
+//        film.setId(filmFromDb.getId());
 
         return filmFromDb;
     }
