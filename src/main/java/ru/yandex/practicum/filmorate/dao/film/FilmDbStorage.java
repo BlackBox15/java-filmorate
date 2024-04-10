@@ -160,29 +160,32 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findAll() {
         String allFilmsFromDb = "select * from FILMS";
         String genresForFilmFromDb = "select * from GENRE where ID in (select GENRE_ID from FILM_GENRE where FILM_ID = ?)";
-        List<Film> films = new ArrayList<>();
 
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(allFilmsFromDb);
+        List<Film> films = jdbcTemplate.query(allFilmsFromDb, this::mapRowToFilm);
 
-        while (filmRows.next()) {
-            Film film = new Film();
-            film.setId(filmRows.getInt("ID"));
-            film.setName(filmRows.getString("NAME"));
-            film.setDescription(filmRows.getString("DESCRIPTION"));
-            film.setReleaseDate(filmRows.getDate("RELEASE_DATE").toLocalDate());
-            film.setDuration(filmRows.getInt("DURATION"));
-            film.setMpa(mpaDbStorage.findById(filmRows.getInt("MPA")));
-            film.setGenres(jdbcTemplate.query(
-                    genresForFilmFromDb,
-                    (resultSet, rowNum) -> {
-                        Genre genre = new Genre();
-                        genre.setName(resultSet.getString("GENRE"));
-                        genre.setId(Integer.parseInt(resultSet.getString("ID")));
-                        return genre;
-                    },
-                    filmRows.getInt("ID")));
-            films.add(film);
-        }
+//        List<Film> films = new ArrayList<>();
+
+//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(allFilmsFromDb);
+//
+//        while (filmRows.next()) {
+//            Film film = new Film();
+//            film.setId(filmRows.getInt("ID"));
+//            film.setName(filmRows.getString("NAME"));
+//            film.setDescription(filmRows.getString("DESCRIPTION"));
+//            film.setReleaseDate(filmRows.getDate("RELEASE_DATE").toLocalDate());
+//            film.setDuration(filmRows.getInt("DURATION"));
+//            film.setMpa(mpaDbStorage.findById(filmRows.getInt("MPA")));
+//            film.setGenres(jdbcTemplate.query(
+//                    genresForFilmFromDb,
+//                    (resultSet, rowNum) -> {
+//                        Genre genre = new Genre();
+//                        genre.setName(resultSet.getString("GENRE"));
+//                        genre.setId(Integer.parseInt(resultSet.getString("ID")));
+//                        return genre;
+//                    },
+//                    filmRows.getInt("ID")));
+//            films.add(film);
+//        }
 
         return films;
     }
