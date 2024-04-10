@@ -40,7 +40,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film create(Film film) {
         String newFilmToDd = "insert into FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA) values(?, ?, ?, ?, ?)";
         String newFilmGenreRow = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values(?, ?)";
-        String currentFilmsFromDb = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where NAME = ? order by ID desc limit 1";
+        String currentFilmsFromDb = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id  where NAME = ? order by ID desc limit 1";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -95,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
         String updateFilmInDb = "update FILMS set NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, MPA = ? where ID = ?";
         String updateFilmGenreRow = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values(?, ?)";
         String deleteOldFilmGenreRow = "delete from FILM_GENRE where FILM_ID = ?";
-        String currentFilmsFromDb = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where NAME = ?";
+        String currentFilmsFromDb = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id where NAME = ?";
 
         jdbcTemplate.update(deleteOldFilmGenreRow, film.getId());
 
@@ -134,7 +134,7 @@ public class FilmDbStorage implements FilmStorage {
      */
     @Override
     public List<Film> findAll() {
-        String allFilmsFromDb = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from films as f join mpa as m on f.mpa = m.id";
+        String allFilmsFromDb = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from films as f join mpa as m on f.mpa = m.id";
 
         List<Film> films = jdbcTemplate.query(allFilmsFromDb, this::mapRowToFilm);
 
@@ -150,7 +150,7 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbcTemplate.update(sqlForLike, userId, filmId);
 
-        String sqlCheckQuery = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where f.id = ?";
+        String sqlCheckQuery = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id where f.id = ?";
         return jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, filmId);
     }
 
@@ -163,7 +163,7 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbcTemplate.update(sqlForDeleteLike, userId, filmId);
 
-        String sqlCheckQuery = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where f.id = ?";
+        String sqlCheckQuery = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id where f.id = ?";
         return jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToFilm, filmId);
     }
 
@@ -178,7 +178,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Film> topRatedFilms = new ArrayList<>();
         for (Integer filmId : ratedFilms) {
-            String sqlListRatedFilms = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where f.id = ?";
+            String sqlListRatedFilms = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id where f.id = ?";
             topRatedFilms.add(jdbcTemplate.queryForObject(sqlListRatedFilms, this::mapRowToFilm, filmId));
         }
 
@@ -187,7 +187,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film findWithGenre(int filmId) {
-        String getFilmFromDb = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where f.id = ?";
+        String getFilmFromDb = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id where f.id = ?";
 
         Film result = new Film();
 
