@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.dao.mpa.MpaDbStorage;
@@ -54,22 +53,6 @@ public class FilmDbStorage implements FilmStorage {
         }, keyHolder);
         film.setId(keyHolder.getKey().intValue());
 
-//        jdbcTemplate.update(newFilmToDd,
-//                film.getName(),
-//                film.getDescription(),
-//                Date.valueOf(film.getReleaseDate()),
-//                film.getDuration(),
-//                film.getMpa().getId());
-
-//        Film filmFromDd = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
-//        int filmId = filmFromDd.getId();
-
-//        if (film.getGenres() != null) {
-//            for (Genre oneGenre : film.getGenres()) {
-//                jdbcTemplate.update(newFilmGenreRow, oneGenre.getId(), film.getId());
-//            }
-//        }
-//
         if (film.getGenres() != null) {
             jdbcTemplate.batchUpdate(newFilmGenreRow, new BatchPreparedStatementSetter() {
                 @Override
@@ -85,10 +68,8 @@ public class FilmDbStorage implements FilmStorage {
             });
         }
 
-
-
         Film filmFromDb = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
-//        film.setId(filmFromDb.getId());
+        filmFromDb.setGenres(listGenresFromDb(filmFromDb.getId()));
 
         return filmFromDb;
     }
@@ -132,12 +113,6 @@ public class FilmDbStorage implements FilmStorage {
             });
         }
 
-//        if (film.getGenres() != null) {
-//            for (Genre oneGenre : film.getGenres()) {
-//                jdbcTemplate.update(updateFilmGenreRow, oneGenre.getId(), film.getId());
-//            }
-//        }
-
         jdbcTemplate.update(updateFilmInDb,
                 film.getName(),
                 film.getDescription(),
@@ -148,7 +123,7 @@ public class FilmDbStorage implements FilmStorage {
         );
 
         Film filmFromDb = jdbcTemplate.queryForObject(currentFilmsFromDb, this::mapRowToFilm, film.getName());
-
+        filmFromDb.setGenres(listGenresFromDb(filmFromDb.getId()));
         return filmFromDb;
     }
 
@@ -162,30 +137,6 @@ public class FilmDbStorage implements FilmStorage {
         String genresForFilmFromDb = "select * from GENRE where ID in (select GENRE_ID from FILM_GENRE where FILM_ID = ?)";
 
         List<Film> films = jdbcTemplate.query(allFilmsFromDb, this::mapRowToFilm);
-
-//        List<Film> films = new ArrayList<>();
-
-//        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(allFilmsFromDb);
-//
-//        while (filmRows.next()) {
-//            Film film = new Film();
-//            film.setId(filmRows.getInt("ID"));
-//            film.setName(filmRows.getString("NAME"));
-//            film.setDescription(filmRows.getString("DESCRIPTION"));
-//            film.setReleaseDate(filmRows.getDate("RELEASE_DATE").toLocalDate());
-//            film.setDuration(filmRows.getInt("DURATION"));
-//            film.setMpa(mpaDbStorage.findById(filmRows.getInt("MPA")));
-//            film.setGenres(jdbcTemplate.query(
-//                    genresForFilmFromDb,
-//                    (resultSet, rowNum) -> {
-//                        Genre genre = new Genre();
-//                        genre.setName(resultSet.getString("GENRE"));
-//                        genre.setId(Integer.parseInt(resultSet.getString("ID")));
-//                        return genre;
-//                    },
-//                    filmRows.getInt("ID")));
-//            films.add(film);
-//        }
 
         return films;
     }
@@ -241,7 +192,7 @@ public class FilmDbStorage implements FilmStorage {
         Film result = new Film();
 
         result = jdbcTemplate.queryForObject(getFilmFromDb, this::mapRowToFilm, filmId);
-
+        result.setGenres(listGenresFromDb(result.getId()));
         return result;
     }
 
@@ -271,20 +222,21 @@ public class FilmDbStorage implements FilmStorage {
      */
     private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
         Film resultFilm = new Film();
-
-        String sqlQuery = "select * from FILM_GENRE where FILM_ID = ?";
-        List<Genre> genres;
-        genres = jdbcTemplate.query(sqlQuery, (resultSet, rN) -> mapRowToGenre(resultSet, rN), rs.getInt("ID"));
-
         resultFilm.setId(rs.getInt("ID"));
         resultFilm.setName(rs.getString("NAME"));
         resultFilm.setDescription(rs.getString("DESCRIPTION"));
         resultFilm.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
         resultFilm.setDuration(rs.getInt("DURATION"));
         resultFilm.setMpa(mpaDbStorage.findById(rs.getInt("MPA")));
-        resultFilm.setGenres(genres);
 
         return resultFilm;
+    }
+
+    private List<Genre> listGenresFromDb(int filmId) {
+        String sqlQuery = "select * from FILM_GENRE where FILM_ID = ?";
+        List<Genre> genres;
+        genres = jdbcTemplate.query(sqlQuery, (resultSet, rN) -> mapRowToGenre(resultSet, rN), filmId);
+        return genres;
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, Integer rowNum) throws SQLException {
