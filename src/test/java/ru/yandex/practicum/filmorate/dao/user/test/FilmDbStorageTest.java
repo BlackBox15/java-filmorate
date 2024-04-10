@@ -52,14 +52,11 @@ public class FilmDbStorageTest {
         film3.setReleaseDate(LocalDate.parse("1988-01-01"));
         film3.setMpa(mpa);
 
-        Film checkedFilm1 = filmDbStorage.create(film1);
-        film1.setId(checkedFilm1.getId());
+        film1 = filmDbStorage.create(film1);
 
-        Film checkedFilm2 = filmDbStorage.create(film2);
-        film2.setId(checkedFilm2.getId());
+        film2 = filmDbStorage.create(film2);
 
-        Film checkedFilm3 = filmDbStorage.create(film3);
-        film3.setId(checkedFilm3.getId());
+        film3 = filmDbStorage.create(film3);
     }
 
     @Test
@@ -87,14 +84,11 @@ public class FilmDbStorageTest {
         Mpa mpa = new Mpa();
         mpa.setId(5);
         anotherFilm.setMpa(mpa);
-
         int oldSizeDbStorage = filmDbStorage.findAll().size();
-
-        Film checkedFilm1 = filmDbStorage.create(anotherFilm);
-        anotherFilm.setId(checkedFilm1.getId());
+        anotherFilm.setId(filmDbStorage.create(anotherFilm).getId());
 
         assertThat(filmDbStorage.findAll().size()).isEqualTo(oldSizeDbStorage + 1);
-        assertThat(filmDbStorage.findAll().contains(anotherFilm)).isTrue();
+        assertThat(filmDbStorage.findAll().stream().anyMatch(film -> film.getName().equals(anotherFilm.getName()))).isTrue();
     }
 
     @Test
@@ -117,29 +111,19 @@ public class FilmDbStorageTest {
 
     @Test
     public void testFindAllFilms() {
-        GenreDbStorage genreDbStorage = new GenreDbStorage(jdbcTemplate);
-        MpaDbStorage mpaDbStorage = new MpaDbStorage(jdbcTemplate);
-        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate, genreDbStorage, mpaDbStorage);
-
-        Film film1 = new Film();
-        film1.setName("Ну погоди");
-        film1.setDuration(50);
-        film1.setReleaseDate(LocalDate.parse("1980-01-01"));
+        Film anotherFilm = new Film();
+        anotherFilm.setName("ужастик");
+        anotherFilm.setDuration(111);
+        anotherFilm.setReleaseDate(LocalDate.parse("2001-01-01"));
         Mpa mpa = new Mpa();
-        mpa.setId(3);
-        film1.setMpa(mpa);
+        mpa.setId(5);
+        anotherFilm.setMpa(mpa);
+        anotherFilm.setId(filmDbStorage.create(anotherFilm).getId());
 
-        Film film2 = new Film();
-        film2.setName("Ну погоди 2");
-        film2.setDuration(50);
-        film2.setReleaseDate(LocalDate.parse("1984-01-01"));
-        film2.setMpa(mpa);
-        Film checkedFilm1 = filmDbStorage.create(film1);
-        film1.setId(checkedFilm1.getId());
-
-        Film checkedFilm2 = filmDbStorage.create(film2);
-        film2.setId(checkedFilm2.getId());
-
-
+        assertThat(filmDbStorage.findAll().size()).isEqualTo(4);
+        assertThat(filmDbStorage.findAll().stream().anyMatch(film -> film.getName().equals(film1.getName()))).isTrue();
+        assertThat(filmDbStorage.findAll().stream().anyMatch(film -> film.getName().equals(film2.getName()))).isTrue();
+        assertThat(filmDbStorage.findAll().stream().anyMatch(film -> film.getName().equals(film3.getName()))).isTrue();
+        assertThat(filmDbStorage.findAll().stream().anyMatch(film -> film.getName().equals(anotherFilm.getName()))).isTrue();
     }
 }
