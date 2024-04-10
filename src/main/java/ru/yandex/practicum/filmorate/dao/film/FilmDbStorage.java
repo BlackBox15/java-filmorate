@@ -118,10 +118,25 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(deleteOldFilmGenreRow, film.getId());
 
         if (film.getGenres() != null) {
-            for (Genre oneGenre : film.getGenres()) {
-                jdbcTemplate.update(updateFilmGenreRow, oneGenre.getId(), film.getId());
-            }
+            jdbcTemplate.batchUpdate(updateFilmGenreRow, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                    preparedStatement.setInt(1, film.getGenres().get(i).getId());
+                    preparedStatement.setInt(2, film.getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return film.getGenres().size();
+                }
+            });
         }
+
+//        if (film.getGenres() != null) {
+//            for (Genre oneGenre : film.getGenres()) {
+//                jdbcTemplate.update(updateFilmGenreRow, oneGenre.getId(), film.getId());
+//            }
+//        }
 
         jdbcTemplate.update(updateFilmInDb,
                 film.getName(),
