@@ -44,7 +44,7 @@ public class FilmDbStorage implements FilmStorage {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(newFilmToDd, new String[]{"FILM_ID"});
+            PreparedStatement stmt = connection.prepareStatement(newFilmToDd, new String[]{"ID"});
             stmt.setString(1, film.getName());
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
@@ -273,7 +273,7 @@ public class FilmDbStorage implements FilmStorage {
         Film resultFilm = new Film();
 
         String sqlQuery = "select * from FILM_GENRE where FILM_ID = ?";
-        List<Genre> genres = new ArrayList<>();
+        List<Genre> genres;
         genres = jdbcTemplate.query(sqlQuery, (resultSet, rN) -> mapRowToGenre(resultSet, rN), rs.getInt("ID"));
 
         resultFilm.setId(rs.getInt("ID"));
