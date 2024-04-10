@@ -40,7 +40,6 @@ public class FilmDbStorage implements FilmStorage {
     public Film create(Film film) {
         String newFilmToDd = "insert into FILMS (NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA) values(?, ?, ?, ?, ?)";
         String newFilmGenreRow = "insert into FILM_GENRE (GENRE_ID, FILM_ID) values(?, ?)";
-//        String currentFilmsFromDb = "select * from FILMS where NAME = ? order by ID desc limit 1";
         String currentFilmsFromDb = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from FILMS as f join mpa as m on f.mpa = m.id  where NAME = ? order by ID desc limit 1";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -136,7 +135,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> findAll() {
         String allFilmsFromDb = "select f.id, f.name, f.description , f.release_date , f.duration , f.mpa, m.rating  from films as f join mpa as m on f.mpa = m.id";
-//        String allFilmsFromDb = "select * from FILMS";
 
         List<Film> films = jdbcTemplate.query(allFilmsFromDb, this::mapRowToFilm);
 
