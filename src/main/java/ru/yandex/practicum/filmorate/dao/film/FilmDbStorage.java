@@ -134,7 +134,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> findAll() {
         String allFilmsFromDb = "select * from FILMS";
-        String genresForFilmFromDb = "select * from GENRE where ID in (select GENRE_ID from FILM_GENRE where FILM_ID = ?)";
 
         List<Film> films = jdbcTemplate.query(allFilmsFromDb, this::mapRowToFilm);
 
