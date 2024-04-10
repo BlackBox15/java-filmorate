@@ -46,7 +46,7 @@ public class UserService {
         return userDbStorage.findAll();
     }
 
-    public User remove(User user) {
-        return userDbStorage.remove(user);
+    public void remove(User user) {
+        userDbStorage.remove(user);
     }
 }

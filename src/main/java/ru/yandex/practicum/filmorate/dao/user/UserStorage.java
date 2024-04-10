@@ -8,7 +8,7 @@ public interface UserStorage {
 
     User create(User user);
 
-    User remove(User user);
+    void remove(User user);
 
     User update(User user);
 

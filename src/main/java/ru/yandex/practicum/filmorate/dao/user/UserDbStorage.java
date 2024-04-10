@@ -49,15 +49,10 @@ public class UserDbStorage implements UserStorage {
      * @return пока непонятно, что за пользователя мы должны здесь вернуть
      */
     @Override
-    public User remove(User user) {
+    public void remove(User user) {
         validateUserId(user.getId());
-
         String sql = "delete from USERS where LOGIN = ?";
-
         jdbcTemplate.update(sql, user.getLogin());
-
-        String sqlCheckQuery = "select * from USERS where LOGIN = ?";
-        return jdbcTemplate.queryForObject(sqlCheckQuery, this::mapRowToUser, user.getLogin());
     }
 
     /**
