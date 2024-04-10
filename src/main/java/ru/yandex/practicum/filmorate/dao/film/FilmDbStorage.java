@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.dao.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -224,7 +223,6 @@ public class FilmDbStorage implements FilmStorage {
         Film resultFilm = new Film();
 
         String sqlQuery = "select * from FILM_GENRE where FILM_ID = ?";
-        Integer testId = rs.getInt("ID");
         List<Genre> genres = new ArrayList<>();
         genres = jdbcTemplate.query(sqlQuery, (resultSet, rN) -> mapRowToGenre(resultSet, rN), rs.getInt("ID"));
 
