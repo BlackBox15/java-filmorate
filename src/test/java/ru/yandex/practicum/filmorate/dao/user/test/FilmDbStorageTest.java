@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dao.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.dao.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.dao.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,20 +20,24 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
-    private final GenreDbStorage genreDbStorage;
-    private final MpaDbStorage mpaDbStorage;
 
     @Test
     public void testAllFilmIds() {
+        GenreDbStorage genreDbStorage = new GenreDbStorage(jdbcTemplate);
+        MpaDbStorage mpaDbStorage = new MpaDbStorage(jdbcTemplate);
         Film film1 = new Film();
         film1.setName("Ну погоди");
         film1.setDuration(50);
         film1.setReleaseDate(LocalDate.parse("1980-01-01"));
+        Mpa mpa = new Mpa();
+        mpa.setId(3);
+        film1.setMpa(mpa);
 
         Film film2 = new Film();
         film2.setName("Ну погоди 2");
         film2.setDuration(50);
         film2.setReleaseDate(LocalDate.parse("1984-01-01"));
+        film2.setMpa(mpa);
         FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate, genreDbStorage, mpaDbStorage);
 
         Film checkedFilm1 = filmDbStorage.create(film1);
@@ -44,5 +49,35 @@ public class FilmDbStorageTest {
         List<Integer> actualIds = List.of(film1.getId(), film2.getId());
         List<Integer> checkedIds = filmDbStorage.allFilmId();
         assertThat(checkedIds).isEqualTo(actualIds);
+    }
+
+    @Test
+    public void testAllFilmNames() {
+        GenreDbStorage genreDbStorage = new GenreDbStorage(jdbcTemplate);
+        MpaDbStorage mpaDbStorage = new MpaDbStorage(jdbcTemplate);
+        Film film1 = new Film();
+        film1.setName("Ну погоди");
+        film1.setDuration(50);
+        film1.setReleaseDate(LocalDate.parse("1980-01-01"));
+        Mpa mpa = new Mpa();
+        mpa.setId(3);
+        film1.setMpa(mpa);
+
+        Film film2 = new Film();
+        film2.setName("Ну погоди 2");
+        film2.setDuration(50);
+        film2.setReleaseDate(LocalDate.parse("1984-01-01"));
+        film2.setMpa(mpa);
+        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate, genreDbStorage, mpaDbStorage);
+
+        Film checkedFilm1 = filmDbStorage.create(film1);
+        film1.setId(checkedFilm1.getId());
+
+        Film checkedFilm2 = filmDbStorage.create(film2);
+        film2.setId(checkedFilm2.getId());
+
+        List<String> allFilmNames = filmDbStorage.allFilmNames();
+        assertThat(allFilmNames.get(0)).isEqualTo(film1.getName());
+        assertThat(allFilmNames.get(1)).isEqualTo(film2.getName());
     }
 }
