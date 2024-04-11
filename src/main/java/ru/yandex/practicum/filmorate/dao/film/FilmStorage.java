@@ -12,6 +12,8 @@ public interface FilmStorage {
 
     List<Film> findAll();
 
+    Film findById(int filmId);
+
     Film likeFilm(int filmId, int userId);
 
     Film findWithGenre(int filmId);
