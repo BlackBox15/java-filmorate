@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @RestController
@@ -19,21 +20,21 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) throws ValidationException {
+    public User create(@Valid @RequestBody User user) throws ValidationException {
         log.debug("Получен запрос POST на добавление нового пользователя");
         return userService.create(user);
     }
 
     @PutMapping
-    public User update(@RequestBody User user) throws ValidationException, NoSuchElementException {
+    public User update(@Valid @RequestBody User user) throws ValidationException, NoSuchElementException {
         log.debug("Получен запрос PUT на обновление пользователя");
         return userService.update(user);
     }
 
     @DeleteMapping
-    public User remove(@RequestBody User user) throws NullPointerException {
+    public void remove(@RequestBody User user) throws NullPointerException {
         log.debug("Получен запрос DELETE на удаление пользователя");
-        return userService.remove(user);
+        userService.remove(user);
     }
 
     @GetMapping
@@ -42,7 +43,6 @@ public class UserController {
         log.debug("Получен запрос GET на получение списка всех пользователей");
         return userService.findAll();
     }
-
 
     @GetMapping("/{id}")
     @ResponseBody
@@ -73,8 +73,8 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     @ResponseBody
-    public List<User> getSharedFriends(@PathVariable int id, @PathVariable int otherId) {
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
         log.debug("Получен запрос GET на получение списка общих друзей пользователя с id {} и другого пользователя с id {}", id, otherId);
-        return userService.getSharedFriends(id, otherId);
+        return userService.getCommonFriends(id, otherId);
     }
 }

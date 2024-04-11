@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,21 +26,21 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) throws ValidationException {
+    public Film create(@Valid @RequestBody Film film) throws ValidationException {
         log.debug("Получен запрос POST на создание фильма \"{}\"", film.getName());
         return filmService.create(film);
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) throws ValidationException {
+    public Film update(@Valid @RequestBody Film film) throws ValidationException {
         log.debug("Получен запрос PUT на обновление фильма \"{}\"", film.getName());
         return filmService.update(film);
     }
 
     @DeleteMapping
-    public Film remove(@RequestBody Film film) throws NullPointerException {
+    public void remove(@RequestBody Film film) throws NullPointerException {
         log.debug("Получен запрос DELETE на удаление фильма \"{}\"", film.getName());
-        return filmService.remove(film);
+        filmService.remove(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -60,8 +61,15 @@ public class FilmController {
     @ResponseBody
     public List<Film> findTopTen(@RequestParam(required = false) int count) {
         log.debug("Получен запрос GET на получение списка рейтинговых фильмов");
-        if (count == 0) return filmService.findTopRated();
+        if (count <= 0) return filmService.findTopRated();
         else return filmService.findTopRated(count);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public Film findWithGenre(@PathVariable int id) {
+        log.debug("Получен запрос GET");
+        return filmService.findWithGenre(id);
     }
 }
 
