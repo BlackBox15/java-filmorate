@@ -60,7 +60,6 @@ public class FilmService {
     }
 
     public Film update(Film film) {
-        Film testFilm = filmDbStorage.findById(film.getId());
         if (filmDbStorage.findById(film.getId()) == null) {
             log.error("Отсутствует или введён несуществующий Id");
             throw new NoSuchObjectException("Отсутствует или введён несуществующий Id");

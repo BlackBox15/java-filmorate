@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.film;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.dao.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchObjectException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -171,17 +169,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film findById(int filmId) {
-        String sql = "select * from FILMS where ID = ?";
+        String sql = "select f.id, f.name, f.description, f.release_date, f.duration, f.mpa, m.rating from FILMS as f join mpa as m on f.mpa = m.id where f.id = ?";
         Film filmById = null;
 
-        try {
-            filmById = jdbcTemplate.queryForObject(sql, this::mapRowToFilm, filmId);
-        } catch (Exception e) {
-            throw new ValidationException("Фильм с Id не найден в БД");
-        } finally {
-            return filmById;
-        }
+        filmById = jdbcTemplate.queryForObject(sql, this::mapRowToFilm, filmId);
 
+        return filmById;
     }
 
     @Override
